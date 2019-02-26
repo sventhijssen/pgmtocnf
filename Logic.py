@@ -1,7 +1,9 @@
 class Clause:
 
-    def __init__(self):
-        self.variables = []
+    def __init__(self, variables=None):
+        if variables is None:
+            variables = []
+        self.variables = variables
 
     def __add__(self, other):
         self.variables.append(other)
@@ -37,8 +39,8 @@ class Implication:
         self.left = left
         self.right = right
 
-    def get_cnfs(self):
-        return "-" + self.left
+    def get_clause(self):
+        return Clause([Literal(self.left, False), Literal(self.right)])
 
 
 class Conjunction:

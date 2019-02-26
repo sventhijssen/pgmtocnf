@@ -18,5 +18,8 @@ class ParameterVariable:
         self.condition_value = incoming_value
 
     def __str__(self):
-        return "theta_{0}{1}|{2}{3}".format(str(self.conditional_node.name), str(self.condition_value),
+        if not self.condition_node:
+            return "theta_{0}{1}".format(str(self.conditional_node.name), str(self.conditional_value))
+        else:
+            return "theta_{0}{1}|{2}{3}".format(str(self.conditional_node.name), str(self.conditional_value),
                                             str(self.condition_node.name), str(self.condition_value))
