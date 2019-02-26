@@ -4,7 +4,7 @@ from Graph import Node, Edge, Graph
 
 # For the given graph, create Encoding 1 and Encoding 2
 def main():
-    i = Node("i", [1, 2, 3])
+    i = Node("i")
     o = Node("o")
     r = Node("r")
     t = Node("t")

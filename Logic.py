@@ -20,7 +20,7 @@ class Literal:
         if self.positive:
             return str(self.name)
         else:
-            return "-" + str(self.name)
+            return "\+" + str(self.name)
 
 
 class Equivalence:

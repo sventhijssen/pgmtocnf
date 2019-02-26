@@ -1,4 +1,4 @@
-from Logic import Clause
+from Logic import Clause, Literal
 from Variables import IndicatorVariable, ParameterVariable
 
 
@@ -48,15 +48,15 @@ class Encoding1:
         for node in self.graph.nodes:
             clause = Clause()
             for i in range(len(node.get_values())):
-                clause.__add__(IndicatorVariable(node, i+1))
+                clause.__add__(Literal(IndicatorVariable(node, i+1)))
             clauses.append(clause)
 
         for node in self.graph.nodes:
             for i in range(len(node.get_values())):
                 for j in range(i+1, len(node.get_values())):
                     clause = Clause()
-                    clause.__add__(IndicatorVariable(node, i+1))
-                    clause.__add__(IndicatorVariable(node, j+1))
+                    clause.__add__(Literal(IndicatorVariable(node, i+1), False))
+                    clause.__add__(Literal(IndicatorVariable(node, j+1), False))
                     clauses.append(clause)
 
         return "\n".join(map(str, clauses))
