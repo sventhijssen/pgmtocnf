@@ -69,7 +69,15 @@ class Encoding1:
             if node not in self.graph.get_end_nodes():
                 for i in range(len(node.get_values())):
                     equivalences.append(Equivalence(Literal(IndicatorVariable(node, i+1)), Literal(ParameterVariable(node, i+1))))
+            else:
+                for edge in self.graph.edges:
+                    if edge.end == node:
+                        start_node = edge.start
+                        for i in range(len(node.get_values())):
+                            for j in range(len(start_node.get_values())):
+                                equivalences.append(Equivalence(Conjunction([Literal(IndicatorVariable(node, i+1)), Literal(IndicatorVariable(start_node, j+1))]), Literal(ParameterVariable(node, i+1, start_node, j+1))))
 
+        # TODO: Fix, left part or right part of implication can contain conjunctions such that multiple clauses can be derived
         for equivalence in equivalences:
             for implication in equivalence.get_implications():
                 clauses.append(implication.get_clause())
