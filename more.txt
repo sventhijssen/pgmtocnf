@@ -1,0 +1,58 @@
+def create_logical_variables(graph):
+    """
+    c A sample .cnf file.
+    p cnf 3 2
+    1 -3 0
+    2 3 -1 0
+    """
+    file = open("cnf.txt", "w")
+
+    file.write("c A sample .cnf file.")
+    file.write("p cnf")
+    i = 0
+    for node in graph.nodes:
+        file.write("")
+    for edge in graph.edges:
+        file.write("")
+
+    file.close()
+
+
+def create_clauses(graph):
+    file = open("cnf.txt", "w")
+
+    file.write("c A sample .cnf file.")
+    file.write("p cnf")
+    print("Indicator clauses")
+    i = 1
+    for node in graph.nodes:
+        file.write(i)
+        file.write(" ")
+        i = i + 1
+        file.write(i)
+        file.write(" ")
+        file.write(str(0))
+        file.write("\n")
+
+        file.write(-i)
+        file.write(" ")
+        i = i + 1
+        file.write(-i)
+        file.write(" ")
+        file.write(str(0))
+        file.write("\n")
+
+    print("Parameter clauses")
+
+    for node in graph.nodes:
+        starts = get_start_nodes(node, graph.edges)
+        if len(starts) == 0:
+            file.write()
+
+
+def get_start_nodes(node, edges):
+    starts = []
+    for edge in edges:
+        if edge.end == node:
+            starts.append(edge.start)
+    return starts
