@@ -1,7 +1,7 @@
 import itertools
 
 from Instance import Instance
-from Logic import Clause, Literal, Conjunction, Equivalence
+from Logic import Clause, Literal, Conjunction, Equivalence, Disjunction
 from Variables import IndicatorVariable, ParameterVariable
 
 
@@ -85,8 +85,17 @@ class Encoding1:
                 lst = []
                 for tup in cs:
                     l = list(tup)
-                    lst.append([l + [ParameterVariable(node, v, l)] for v in node.get_values()])
+                    nl = []
+                    for v in l:
+                        nl.append(IndicatorVariable(v.get_node(), v.get_value()))
+                    lst += [nl + [IndicatorVariable(node, v), ParameterVariable(node, v, l)] for v in node.get_values()]
                 print(lst)
+
+                for it in lst:
+                    print(Equivalence(Conjunction(it[:len(it)-1]), it[len(it)-1]))
+
+
+
                 # cartesian = list(itertools.product(*values))
                 # lst = []
                 # for tup in cs:

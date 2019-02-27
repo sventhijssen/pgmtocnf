@@ -6,6 +6,9 @@ class Instance:
     def get_node(self):
         return self.node
 
+    def get_node_name(self):
+        return self.node.name
+
     def get_value(self):
         return self.value
 

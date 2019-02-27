@@ -33,6 +33,9 @@ class Equivalence:
     def get_implications(self):
         return [Implication(self.left, self.right), Implication(self.right, self.left)]
 
+    def __str__(self):
+        return str(self.left) + " <=> " + str(self.right)
+
 
 class Implication:
     def __init__(self, left, right):
@@ -45,12 +48,21 @@ class Implication:
     def get_clauses(self):
         return Clause()
 
+    def __str__(self):
+        return str(self.left) + " => " + str(self.right)
+
 
 class Conjunction:
     def __init__(self, literals):
         self.literals = literals
 
+    def __str__(self):
+        return " /\ ".join(map(str, self.literals))
+
 
 class Disjunction:
     def __init__(self, literals):
         self.literals = literals
+
+    def __str__(self):
+        return " \/ ".join(map(str, self.literals))
