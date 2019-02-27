@@ -42,6 +42,9 @@ class Implication:
     def get_clause(self):
         return Clause([Literal(self.left, False), Literal(self.right)])
 
+    def get_clauses(self):
+        return Clause()
+
 
 class Conjunction:
     def __init__(self, literals):

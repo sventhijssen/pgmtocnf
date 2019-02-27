@@ -1,3 +1,5 @@
+import itertools
+
 from Logic import Clause, Literal, Conjunction, Equivalence
 from Variables import IndicatorVariable, ParameterVariable
 
@@ -70,17 +72,31 @@ class Encoding1:
                 for i in range(len(node.get_values())):
                     equivalences.append(Equivalence(Literal(IndicatorVariable(node, i+1)), Literal(ParameterVariable(node, i+1))))
             else:
-                for edge in self.graph.edges:
-                    if edge.end == node:
-                        start_node = edge.start
-                        for i in range(len(node.get_values())):
-                            for j in range(len(start_node.get_values())):
-                                equivalences.append(Equivalence(Conjunction([Literal(IndicatorVariable(node, i+1)), Literal(IndicatorVariable(start_node, j+1))]), Literal(ParameterVariable(node, i+1, start_node, j+1))))
+                values = []
+                for i in self.graph.get_incoming_nodes(node):
+                    values.append([IndicatorVariable(i, v) for v in i.get_values()])
+                values.append([ParameterVariable(node, v) for v in node.get_values()])
 
-        # TODO: Fix, left part or right part of implication can contain conjunctions such that multiple clauses can be derived
-        for equivalence in equivalences:
-            for implication in equivalence.get_implications():
-                clauses.append(implication.get_clause())
+
+                cartesian = list(itertools.product(*values))
+
+                for c in cartesian:
+                    print(c)
+
+                # for start_node in self.graph.get_incoming_nodes(node):
+                #     for value in start_node.get_values():
+                #         clauses.append(Clause([Literal(), Literal()]))
+                # for edge in self.graph.edges:
+                #     if edge.end == node:
+                #         start_node = edge.start
+                #         for i in range(len(node.get_values())):
+                #             for j in range(len(start_node.get_values())):
+                #                 equivalences.append(Equivalence(Conjunction([Literal(IndicatorVariable(node, i+1)), Literal(IndicatorVariable(start_node, j+1))]), Literal(ParameterVariable(node, i+1, start_node, j+1))))
+
+        # # TODO: Fix, left part or right part of implication can contain conjunctions such that multiple clauses can be derived
+        # for equivalence in equivalences:
+        #     for implication in equivalence.get_implications():
+        #         clauses.append(implication.get_clause())
 
         return "\n".join(map(str, clauses))
 

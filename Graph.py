@@ -15,6 +15,13 @@ class Graph:
             end_nodes.append(edge.end)
         return set(end_nodes)
 
+    def get_incoming_nodes(self, node):
+        incoming = []
+        for edge in self.edges:
+            if edge.end == node:
+                incoming.append(edge.start)
+        return incoming
+
 
 class Node:
     def __init__(self, name, values=None):
@@ -22,6 +29,9 @@ class Node:
             values = [True, False]
         self.name = name
         self.values = values
+
+    def __str__(self):
+        return "Node " + self.name
 
     def get_values(self):
         return self.values
