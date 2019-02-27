@@ -33,7 +33,7 @@ def main():
     graph = Graph([a, b, c], [e1, e2])
 
     enc1 = Encoding1(graph)
-    print(enc1.get_clauses())
+    print(enc1)
     #enc2 = Encoding2(graph)
 
 

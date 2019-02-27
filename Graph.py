@@ -26,7 +26,7 @@ class Graph:
 class Node:
     def __init__(self, name, values=None):
         if values is None:
-            values = [True, False]
+            values = [1, 2]
         self.name = name
         self.values = values
 

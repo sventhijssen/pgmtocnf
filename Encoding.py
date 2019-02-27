@@ -41,9 +41,21 @@ class Encoding1:
         #             self.parameter_variables.append(
         #                 ParameterVariable(node, node_value, node, node_value))
 
+    def __str__(self):
+        out = "-----------------\n"
+        out += "Indicator clauses\n"
+        out += "-----------------\n"
+        out += "\n".join(map(str, self.get_indicator_clauses()))
+        out += "\n\n"
+        out += "-----------------\n"
+        out += "Parameter clauses\n"
+        out += "-----------------\n"
+        out += "\n".join(map(str, self.get_parameter_clauses()))
+        return out
+
 
     def get_clauses(self):
-        return self.get_indicator_clauses() + "\n\n" + self.get_parameter_clauses()
+        return self.get_indicator_clauses() + self.get_parameter_clauses()
 
     def get_indicator_clauses(self):
         clauses = []
@@ -61,7 +73,7 @@ class Encoding1:
                     clause.__add__(Literal(IndicatorVariable(node, j+1), False))
                     clauses.append(clause)
 
-        return "\n".join(map(str, clauses))
+        return clauses
 
     def get_parameter_clauses(self):
         clauses = []
@@ -92,7 +104,7 @@ class Encoding1:
                 for it in lst:
                     clauses.append((Equivalence(Conjunction(it[:len(it)-1]), it[len(it)-1])))
 
-        return "\n".join(map(str, clauses))
+        return clauses
 
 
                 # cartesian = list(itertools.product(*values))
