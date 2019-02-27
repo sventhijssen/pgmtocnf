@@ -34,6 +34,13 @@ def main():
 
     enc1 = Encoding1(graph)
     print(enc1)
+
+    print("===")
+    print("CNF")
+    print("===")
+    cnf = enc1.get_cnf()
+    for clause in cnf:
+        print(clause)
     #enc2 = Encoding2(graph)
 
 

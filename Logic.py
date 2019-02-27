@@ -24,6 +24,17 @@ class Literal:
         else:
             return "\+" + str(self.name)
 
+    def __repr__(self):
+        if self.positive:
+            return str(self.name)
+        else:
+            return "\+" + str(self.name)
+
+    def negate(self):
+        if self.positive:
+            return Literal(self.name, False)
+        return Literal(self.name, True)
+
 
 class Equivalence:
     def __init__(self, left, right):
@@ -36,6 +47,9 @@ class Equivalence:
     def __str__(self):
         return str(self.left) + " <=> " + str(self.right)
 
+    def get_cnf(self):
+        return [imp.get_cnf() for imp in self.get_implications()]
+
 
 class Implication:
     def __init__(self, left, right):
@@ -45,11 +59,14 @@ class Implication:
     def get_clause(self):
         return Clause([Literal(self.left, False), Literal(self.right)])
 
-    def get_clauses(self):
-        return Clause()
-
     def __str__(self):
         return str(self.left) + " => " + str(self.right)
+
+    def get_cnf(self):
+        if type(self.right) is not Conjunction:
+            return [Disjunction([self.left.negate(), self.right])]
+        else:
+            return [Disjunction([self.left.negate(), lit]) for lit in self.right.literals]
 
 
 class Conjunction:
@@ -59,10 +76,19 @@ class Conjunction:
     def __str__(self):
         return " /\ ".join(map(str, self.literals))
 
+    def __repr__(self):
+        return " /\ ".join(map(str, self.literals))
+
+    def negate(self):
+        return Disjunction(lit.negate() for lit in self.literals)
+
 
 class Disjunction:
     def __init__(self, literals):
         self.literals = literals
 
     def __str__(self):
+        return " \/ ".join(map(str, self.literals))
+
+    def __repr__(self):
         return " \/ ".join(map(str, self.literals))
