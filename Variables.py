@@ -14,25 +14,22 @@ class IndicatorVariable:
 
 
 class ParameterVariable:
-    def __init__(self, node, value, incoming_nodes=None, incoming_values=None):
-        if incoming_values is None:
-            incoming_values = []
-        if incoming_nodes is None:
-            incoming_nodes = []
+    def __init__(self, node, value, incoming=None):
+        if incoming is None:
+            incoming = []
         self.conditional_node = node
         self.conditional_value = value
-        self.condition_nodes = incoming_nodes
-        self.condition_values = incoming_values
+        self.condition = incoming
 
     def _getstr_(self):
-        if not self.condition_nodes:
+        if not self.condition:
             return "theta_{0}{1}".format(str(self.conditional_node.name), str(self.conditional_value))
         else:
             out = "theta_" + str(self.conditional_node.name) + str(self.conditional_value) + "|"
-            for i in range(len(self.condition_nodes)):
-                out += str(self.condition_nodes[i].name)
-                out += str(self.condition_values[i])
-                if i != len(self.condition_nodes):
+            for i in range(len(self.condition)):
+                out += str(self.condition[i].get_node().name)
+                out += str(self.condition[i].get_value())
+                if i != len(self.condition)-1:
                     out += ","
             return out
 

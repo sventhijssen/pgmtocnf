@@ -1,5 +1,6 @@
 import itertools
 
+from Instance import Instance
 from Logic import Clause, Literal, Conjunction, Equivalence
 from Variables import IndicatorVariable, ParameterVariable
 
@@ -73,15 +74,27 @@ class Encoding1:
                     equivalences.append(Equivalence(Literal(IndicatorVariable(node, i+1)), Literal(ParameterVariable(node, i+1))))
             else:
                 values = []
+                conditions = []
                 for i in self.graph.get_incoming_nodes(node):
                     values.append([IndicatorVariable(i, v) for v in i.get_values()])
-                values.append([ParameterVariable(node, v) for v in node.get_values()])
+                    conditions.append([Instance(i, v) for v in i.get_values()])
+                cs = list(itertools.product(*conditions))
 
+                print(cs)
 
-                cartesian = list(itertools.product(*values))
-
-                for c in cartesian:
-                    print(c)
+                lst = []
+                for tup in cs:
+                    l = list(tup)
+                    lst.append([l + [ParameterVariable(node, v, l)] for v in node.get_values()])
+                print(lst)
+                # cartesian = list(itertools.product(*values))
+                # lst = []
+                # for tup in cs:
+                #     l = list(tup)
+                #     lst.append([ParameterVariable(node, v, l) for v in node.get_values()])
+                #
+                # for l in lst:
+                #     print(l)
 
                 # for start_node in self.graph.get_incoming_nodes(node):
                 #     for value in start_node.get_values():
