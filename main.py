@@ -27,8 +27,8 @@ def main():
     b = Node("b", [1, 2])
     c = Node("c", [1, 2, 3])
 
-    e1 = Edge(a, c)
-    e2 = Edge(b, c)
+    e1 = Edge(a, b)
+    e2 = Edge(a, c)
 
     graph = Graph([a, b, c], [e1, e2])
 

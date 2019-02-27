@@ -9,7 +9,6 @@ class Encoding1:
 
     def __init__(self, graph):
         self.graph = graph
-        self.indicator_variables = []
 
         # # For each value x of each network variable X, define an indicator variable lambda_x
         # for node in graph.nodes:
@@ -65,13 +64,15 @@ class Encoding1:
         return "\n".join(map(str, clauses))
 
     def get_parameter_clauses(self):
-
         clauses = []
         equivalences = []
         for node in self.graph.nodes:
             if node not in self.graph.get_end_nodes():
                 for i in range(len(node.get_values())):
                     equivalences.append(Equivalence(Literal(IndicatorVariable(node, i+1)), Literal(ParameterVariable(node, i+1))))
+
+                clauses.extend(equivalences)
+
             else:
                 values = []
                 conditions = []
@@ -80,8 +81,6 @@ class Encoding1:
                     conditions.append([Instance(i, v) for v in i.get_values()])
                 cs = list(itertools.product(*conditions))
 
-                print(cs)
-
                 lst = []
                 for tup in cs:
                     l = list(tup)
@@ -89,11 +88,11 @@ class Encoding1:
                     for v in l:
                         nl.append(IndicatorVariable(v.get_node(), v.get_value()))
                     lst += [nl + [IndicatorVariable(node, v), ParameterVariable(node, v, l)] for v in node.get_values()]
-                print(lst)
-
+                #clauses.extend(lst)
                 for it in lst:
-                    print(Equivalence(Conjunction(it[:len(it)-1]), it[len(it)-1]))
+                    clauses.append((Equivalence(Conjunction(it[:len(it)-1]), it[len(it)-1])))
 
+        return "\n".join(map(str, clauses))
 
 
                 # cartesian = list(itertools.product(*values))
@@ -120,7 +119,7 @@ class Encoding1:
         #     for implication in equivalence.get_implications():
         #         clauses.append(implication.get_clause())
 
-        return "\n".join(map(str, clauses))
+        #return "\n".join(map(str, clauses))
 
 class Encoding2:
 
