@@ -36,13 +36,21 @@ def main():
     print(enc1)
 
     print("===")
-    print("CNF")
+    print("CNF - ENC1")
     print("===")
     cnf = enc1.get_cnf()
     for clause in cnf:
         print(clause)
-    #enc2 = Encoding2(graph)
 
+    enc2 = Encoding2(graph)
+    print(enc2)
+
+    print("===")
+    print("CNF - ENC2")
+    print("===")
+    cnf2 = enc2.get_cnf()
+    for clause in cnf2:
+        print(clause)
 
 if __name__ == '__main__':
     main()
