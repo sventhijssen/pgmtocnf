@@ -41,22 +41,17 @@ def main():
     print("===")
     print("CNF - ENC1")
     print("===")
-    cnf = enc1.get_cnf()
-    for clause in cnf:
-        print(clause)
+    enc1.export_to_dimacs("out/enc1.cnf")
 
-    vars = enc1.get_all_variables()
-    enc1.to_dimacs()
-
-    enc2 = Encoding2(graph)
-    print(enc2)
-
-    print("===")
-    print("CNF - ENC2")
-    print("===")
-    cnf2 = enc2.get_cnf()
-    for clause in cnf2:
-        print(clause)
+    # enc2 = Encoding2(graph)
+    # print(enc2)
+    #
+    # print("===")
+    # print("CNF - ENC2")
+    # print("===")
+    # cnf2 = enc2.get_cnf()
+    # for clause in cnf2:
+    #     print(clause)
 
 if __name__ == '__main__':
     main()

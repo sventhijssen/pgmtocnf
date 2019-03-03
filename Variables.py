@@ -24,7 +24,9 @@ class IndicatorVariable:
 class ParameterVariable:
     def __init__(self, node, value, incoming=None):
         if incoming is None:
-            incoming = []
+            incoming = frozenset()
+        else:
+            incoming = frozenset(incoming)
         self.conditional_node = node
         self.conditional_value = value
         self.condition = incoming
@@ -39,11 +41,13 @@ class ParameterVariable:
             return "theta_{0}{1}".format(str(self.conditional_node.name), str(self.conditional_value))
         else:
             out = "theta_" + str(self.conditional_node.name) + str(self.conditional_value) + "|"
-            for i in range(len(self.condition)):
-                out += str(self.condition[i].get_node().name)
-                out += str(self.condition[i].get_value())
+            i = 0
+            for cond in self.condition:
+                out += str(cond.get_node().name)
+                out += str(cond.get_value())
                 if i != len(self.condition)-1:
                     out += ","
+                i += 1
             return out
 
     def __str__(self):
@@ -53,4 +57,4 @@ class ParameterVariable:
         return self._getstr_()
 
     def __hash__(self):
-        return hash(self.conditional_node) ^ hash(self.conditional_value)
+        return hash(self.conditional_node) ^ hash(self.conditional_value) ^ hash(self.condition)

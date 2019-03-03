@@ -98,17 +98,23 @@ class Encoding1:
         numbers = [i+1 for i in range(len(variables))]
         return dict(zip(variables, numbers))
 
-    def to_dimacs(self):
+    def export_to_dimacs(self, filename):
         dimacs_enc = self.get_dimacs_map()
-        print(dimacs_enc)
-        for i in dimacs_enc:
-            print(hash(i))
+
+        file = open(filename, "w")
+        file.write("c ENC1\n")
+        file.write("p cnf " + str(len(self.get_all_variables())) + " " + str(len(self.get_cnf())) + "\n")
 
         for disjunction in self.get_cnf():
             for lit in disjunction.literals:
-                print(lit)
-                print(hash(lit))
-                print(dimacs_enc[lit])
+                if lit.positive:
+                    file.write(str(dimacs_enc[lit]))
+                else:
+                    file.write(str(-dimacs_enc[lit]))
+                file.write(" ")
+            file.write(str(0))
+            file.write("\n")
+        file.close()
 
     def assign_weights(self):
         for var in self.get_all_variables():
