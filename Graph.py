@@ -1,7 +1,8 @@
 class Graph:
-    def __init__(self, nodes, edges):
+    def __init__(self, nodes, edges, probabilities):
         self.nodes = nodes
         self.edges = edges
+        self.probabilities = probabilities
 
     def get_start_nodes(self):
         start_nodes = []
@@ -21,6 +22,12 @@ class Graph:
             if edge.end == node:
                 incoming.append(edge.start)
         return incoming
+
+    def get_probability(self, parameter):
+        for prob in self.probabilities:
+            if prob.parameter_variable == parameter:
+                return prob.probability
+        return 1
 
 
 class Node:
