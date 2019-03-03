@@ -33,11 +33,16 @@ class Node:
     def __str__(self):
         return "Node " + self.name
 
+    def __eq__(self, other):
+        if isinstance(other, Node):
+            return self.name == other.name
+        return False
+
+    def __hash__(self):
+        return hash(self.name)
+
     def get_values(self):
         return self.values
-
-    def get_indicator_clauses(self):
-        pass
 
 
 class Edge:

@@ -30,6 +30,14 @@ class Literal:
         else:
             return "\+" + str(self.name)
 
+    def __eq__(self, other):
+        if isinstance(other, Literal):
+            return self.name == other.name
+        return False
+
+    def __hash__(self):
+        return hash(self.name)
+
     def negate(self):
         if self.positive:
             return Literal(self.name, False)

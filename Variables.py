@@ -12,6 +12,14 @@ class IndicatorVariable:
     def __repr__(self):
         return "lambda_{0}{1}".format(str(self.node.name), str(self.value))
 
+    def __eq__(self, other):
+        if isinstance(other, IndicatorVariable):
+            return self.node == other.node and self.value == other.value
+        return False
+
+    def __hash__(self):
+        return hash(self.node) ^ hash(self.value)
+
 
 class ParameterVariable:
     def __init__(self, node, value, incoming=None):
@@ -20,6 +28,11 @@ class ParameterVariable:
         self.conditional_node = node
         self.conditional_value = value
         self.condition = incoming
+
+    def __eq__(self, other):
+        if isinstance(other, ParameterVariable):
+            return self.conditional_node == other.conditional_node and self.conditional_value == other.conditional_value and self.condition == other.condition
+        return False
 
     def _getstr_(self):
         if not self.condition:
@@ -38,3 +51,6 @@ class ParameterVariable:
 
     def __repr__(self):
         return self._getstr_()
+
+    def __hash__(self):
+        return hash(self.conditional_node) ^ hash(self.conditional_value)

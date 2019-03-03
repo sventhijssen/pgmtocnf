@@ -90,6 +90,30 @@ class Encoding1:
 
         return clauses
 
+    def get_all_variables(self):
+        return set(itertools.chain(*[disjunction.literals for disjunction in self.get_cnf()]))
+
+    def get_dimacs_map(self):
+        variables = self.get_all_variables()
+        numbers = [i+1 for i in range(len(variables))]
+        return dict(zip(variables, numbers))
+
+    def to_dimacs(self):
+        dimacs_enc = self.get_dimacs_map()
+        print(dimacs_enc)
+        for i in dimacs_enc:
+            print(hash(i))
+
+        for disjunction in self.get_cnf():
+            for lit in disjunction.literals:
+                print(lit)
+                print(hash(lit))
+                print(dimacs_enc[lit])
+
+    def assign_weights(self):
+        for var in self.get_all_variables():
+            pass
+
 
 class Encoding2:
 
