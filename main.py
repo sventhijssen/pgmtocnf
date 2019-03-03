@@ -3,6 +3,9 @@ from Graph import Node, Edge, Graph
 
 
 # For the given graph, create Encoding 1 and Encoding 2
+from Logic import Literal, Disjunction
+
+
 def main():
     # i = Node("i")
     # o = Node("o")
@@ -42,15 +45,15 @@ def main():
     for clause in cnf:
         print(clause)
 
-    enc2 = Encoding2(graph)
-    print(enc2)
-
-    print("===")
-    print("CNF - ENC2")
-    print("===")
-    cnf2 = enc2.get_cnf()
-    for clause in cnf2:
-        print(clause)
+    # enc2 = Encoding2(graph)
+    # print(enc2)
+    #
+    # print("===")
+    # print("CNF - ENC2")
+    # print("===")
+    # cnf2 = enc2.get_cnf()
+    # for clause in cnf2:
+    #     print(clause)
 
 if __name__ == '__main__':
     main()

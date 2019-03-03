@@ -85,7 +85,13 @@ class Conjunction:
 
 class Disjunction:
     def __init__(self, literals):
-        self.literals = literals
+        lst = []
+        for lit in literals:
+            if type(lit) == Disjunction:
+                lst.extend(lit.literals)
+            else:
+                lst.append(lit)
+        self.literals = lst
 
     def __str__(self):
         return " \/ ".join(map(str, self.literals))
