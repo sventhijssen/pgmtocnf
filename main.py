@@ -43,8 +43,8 @@ def main():
     print("===")
     enc1.export_to_dimacs("out/enc1.cnf")
 
-    # enc2 = Encoding2(graph)
-    # print(enc2)
+    enc2 = Encoding2(graph)
+    print(enc2)
     #
     # print("===")
     # print("CNF - ENC2")

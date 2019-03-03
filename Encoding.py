@@ -196,7 +196,52 @@ class Encoding2:
                 clauses.extend(implications)
 
             #edges coming into the node
-            #else:
+            else:
+                values = []
+                conditions = []
+                for i in self.graph.get_incoming_nodes(node):
+                    values.append([Literal(IndicatorVariable(i, v)) for v in i.get_values()])
+                    conditions.append([Instance(i, v) for v in i.get_values()])
+                cs = list(itertools.product(*conditions))  # cartesian
+                print("JOW" + cs.__str__())
+
+                lst = []
+                j=0
+                for tup in cs:
+                    parameters = []
+                    i = 0
+                    for v in node.get_values():
+                        i = i + 1
+                        l = list(tup)
+                        nl = []
+                        for p in l:
+                            nl.append(Literal(IndicatorVariable(p.get_node(), p.get_value())))
+                        parameterscopy = parameters.copy()
+                        if i < len(cs):
+                            parameterscopy.append(Literal(ParameterVariable(node, v, l)))
+                        if i < len(cs):
+                            parameters.append(Literal(ParameterVariable(node, v, l), False))
+
+                        clauses.append((Implication(Conjunction(nl + parameterscopy), Literal(IndicatorVariable(node, v)))))
+
+
+
+                #parameters = []
+                #i = 0
+                #for tup in cs:
+                #    i = i+1
+                #    l = list(tup)
+                #    nl = []
+                #    for v in l:
+                #        nl.append(Literal(IndicatorVariable(v.get_node(), v.get_value())))
+                #    parameterscopy = parameters.copy()
+                #    lst += [nl + parameterscopy + [Literal(ParameterVariable(node, v, l)),Literal(IndicatorVariable(node, v))] for v in node.get_values()]
+                #    if i < len(cs):
+                #        parameters.append(Literal(ParameterVariable(node,v,l),False))
+
+
+
+
 
 
         return clauses
