@@ -3,6 +3,7 @@ import itertools
 from Instance import Instance
 from Logic import Clause, Literal, Conjunction, Equivalence, Disjunction, Implication
 from Variables import IndicatorVariable, ParameterVariable
+from Weight import Weight
 
 
 class Encoding1:
@@ -116,9 +117,14 @@ class Encoding1:
             file.write("\n")
         file.close()
 
-    def assign_weights(self):
-        for var in self.get_all_variables():
-            pass
+    def get_weights(self):
+        weights = []
+        for literal in self.get_all_variables():
+            if type(literal.name) == ParameterVariable and literal.positive:
+                weights.append(Weight(literal, self.graph.get_probability(literal.name)))
+            else:
+                weights.append(Weight(literal, 1))
+        return weights
 
 
 class Encoding2:
