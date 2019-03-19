@@ -31,6 +31,7 @@ class Encoding1:
 
         parameter_clauses = self.get_parameter_clauses()
         for p in parameter_clauses:  # a parameter clause is an equivalence
+            #print(p)
             cnf = p.get_cnf()
             for lst in cnf:
                 for cjn in lst:
@@ -152,7 +153,9 @@ class Encoding2:
 
         parameter_clauses = self.get_parameter_clauses()
         for p in parameter_clauses:  # a parameter clause is an implication
+            print(p)
             cnf = p.get_cnf()
+            print(cnf)
             for lst in cnf:
                 for cjn in lst:
                     full_cnf.append(cjn)
@@ -209,10 +212,7 @@ class Encoding2:
                     values.append([Literal(IndicatorVariable(i, v)) for v in i.get_values()])
                     conditions.append([Instance(i, v) for v in i.get_values()])
                 cs = list(itertools.product(*conditions))  # cartesian
-                print("JOW" + cs.__str__())
 
-                lst = []
-                j=0
                 for tup in cs:
                     parameters = []
                     i = 0
@@ -223,31 +223,10 @@ class Encoding2:
                         for p in l:
                             nl.append(Literal(IndicatorVariable(p.get_node(), p.get_value())))
                         parameterscopy = parameters.copy()
-                        if i < len(cs):
+                        if i < len(node.get_values()):
                             parameterscopy.append(Literal(ParameterVariable(node, v, l)))
-                        if i < len(cs):
+                        if i < len(node.get_values()):
                             parameters.append(Literal(ParameterVariable(node, v, l), False))
-
                         clauses.append((Implication(Conjunction(nl + parameterscopy), Literal(IndicatorVariable(node, v)))))
-
-
-
-                #parameters = []
-                #i = 0
-                #for tup in cs:
-                #    i = i+1
-                #    l = list(tup)
-                #    nl = []
-                #    for v in l:
-                #        nl.append(Literal(IndicatorVariable(v.get_node(), v.get_value())))
-                #    parameterscopy = parameters.copy()
-                #    lst += [nl + parameterscopy + [Literal(ParameterVariable(node, v, l)),Literal(IndicatorVariable(node, v))] for v in node.get_values()]
-                #    if i < len(cs):
-                #        parameters.append(Literal(ParameterVariable(node,v,l),False))
-
-
-
-
-
 
         return clauses

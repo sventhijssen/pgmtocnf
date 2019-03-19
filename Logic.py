@@ -71,10 +71,18 @@ class Implication:
         return str(self.left) + " => " + str(self.right)
 
     def get_cnf(self):
-        if type(self.right) is not Conjunction:
+        if type(self.right) is not Conjunction:  # and type(self.left) is not Conjunction:
             return [Disjunction([self.left.negate(), self.right])]
-        else:
+        if type(self.right) is Conjunction:  # and type(self.left) is not Conjunction:
             return [Disjunction([self.left.negate(), lit]) for lit in self.right.literals]
+        # if type(self.right) is not Conjunction and type(self.left) is Conjunction:
+        #    lit = []
+        #    for l in self.left.literals:
+        #        lit.append(l.negate())
+        #    lit.append(self.right)
+        #    return [Disjunction(lit)]
+        # if type(self.right) is Conjunction and type(self.left) is Conjunction:
+        #    return [Disjunction([lit.negate(), self.right]) for lit in self.left.literals]
 
 
 class Conjunction:
@@ -100,9 +108,20 @@ class Disjunction:
             else:
                 lst.append(lit)
         self.literals = lst
+        self.i = -1
 
     def __str__(self):
         return " \/ ".join(map(str, self.literals))
 
     def __repr__(self):
         return " \/ ".join(map(str, self.literals))
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        if(len(self.literals)<self.i+1):
+            self.i = self.i + 1
+        else:
+            raise StopIteration
+        return self.literals[self.i]

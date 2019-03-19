@@ -54,28 +54,28 @@ def main():
     graph = Graph([a, b, c], [e1, e2], [w1, w2, w3, w4, w5, w6, w7, w8, w9, w10, w11, w12])
 
     enc1 = Encoding1(graph)
-    print(enc1)
+    #print(enc1)
 
-    print("===")
-    print("CNF - ENC1")
-    print("===")
+    #print("===")
+    #print("CNF - ENC1")
+    #print("===")
     for clause in enc1.get_cnf():
         print(clause)
-    enc1.export_to_dimacs("out/enc1.cnf")
+    #enc1.export_to_dimacs("out/enc1.cnf")
 
-    weights = enc1.get_weights()
-    for weight in weights:
-        print(weight)
+    #weights = enc1.get_weights()
+    #for weight in weights:
+    #    print(weight)
 
-    # enc2 = Encoding2(graph)
-    # print(enc2)
-    #
-    # print("===")
-    # print("CNF - ENC2")
-    # print("===")
-    # cnf2 = enc2.get_cnf()
-    # for clause in cnf2:
-    #     print(clause)
+    enc2 = Encoding2(graph)
+    #print(enc2)
+
+    #cnf2 = enc2.get_cnf()
+    print("===")
+    print("CNF - ENC2")
+    print("===")
+    #for clause in cnf2:
+    #    print(clause)
 
 if __name__ == '__main__':
     main()
