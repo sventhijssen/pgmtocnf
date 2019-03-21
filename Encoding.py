@@ -157,8 +157,7 @@ class Encoding2:
             cnf = p.get_cnf()
             print(cnf)
             for lst in cnf:
-                for cjn in lst:
-                    full_cnf.append(cjn)
+                full_cnf.append(lst)
 
         return full_cnf
 

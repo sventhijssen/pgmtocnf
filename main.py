@@ -68,14 +68,14 @@ def main():
     #    print(weight)
 
     enc2 = Encoding2(graph)
-    #print(enc2)
+    print(enc2)
 
-    #cnf2 = enc2.get_cnf()
+    cnf2 = enc2.get_cnf()
     print("===")
     print("CNF - ENC2")
     print("===")
-    #for clause in cnf2:
-    #    print(clause)
+    for clause in cnf2:
+        print(clause)
 
 if __name__ == '__main__':
     main()

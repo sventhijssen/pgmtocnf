@@ -71,18 +71,25 @@ class Implication:
         return str(self.left) + " => " + str(self.right)
 
     def get_cnf(self):
-        if type(self.right) is not Conjunction:  # and type(self.left) is not Conjunction:
+        if type(self.right) is not Conjunction and type(self.left) is not Conjunction:
+            print("notnot")
             return [Disjunction([self.left.negate(), self.right])]
-        if type(self.right) is Conjunction:  # and type(self.left) is not Conjunction:
+        if type(self.right) is Conjunction and type(self.left) is not Conjunction:
+            print("notyes")
             return [Disjunction([self.left.negate(), lit]) for lit in self.right.literals]
-        # if type(self.right) is not Conjunction and type(self.left) is Conjunction:
-        #    lit = []
-        #    for l in self.left.literals:
-        #        lit.append(l.negate())
-        #    lit.append(self.right)
-        #    return [Disjunction(lit)]
-        # if type(self.right) is Conjunction and type(self.left) is Conjunction:
-        #    return [Disjunction([lit.negate(), self.right]) for lit in self.left.literals]
+        if type(self.right) is not Conjunction and type(self.left) is Conjunction:
+            print("yesnot")
+            lit = []
+            for l in self.left.literals:
+                lit.append(l.negate())
+            lit.append(self.right)
+            return [Disjunction(lit)]
+        if type(self.right) is Conjunction and type(self.left) is Conjunction:
+            print("yesyes")
+            lit = []
+            for l in self.left.literals:
+                lit.append(l.negate())
+            return [Disjunction([lit, lit2]) for lit2 in self.left.literals]
 
 
 class Conjunction:
