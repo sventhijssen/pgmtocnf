@@ -61,11 +61,11 @@ def main():
     #print("===")
     for clause in enc1.get_cnf():
         print(clause)
-    #enc1.export_to_dimacs("out/enc1.cnf")
+    enc1.export_to_dimacs("out/enc1.cnf")
 
-    #weights = enc1.get_weights()
-    #for weight in weights:
-    #    print(weight)
+    weights = enc1.get_weights()
+    for weight in weights:
+        print(weight)
 
     enc2 = Encoding2(graph)
     print(enc2)
@@ -76,6 +76,11 @@ def main():
     print("===")
     for clause in cnf2:
         print(clause)
+    enc2.export_to_dimacs("out/enc2.cnf")
+
+    weights = enc1.get_weights()
+    for weight in weights:
+        print(weight)
 
 if __name__ == '__main__':
     main()

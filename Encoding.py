@@ -229,3 +229,38 @@ class Encoding2:
                         clauses.append((Implication(Conjunction(nl + parameterscopy), Literal(IndicatorVariable(node, v)))))
 
         return clauses
+
+    def get_all_variables(self):
+        return set(itertools.chain(*[disjunction.literals for disjunction in self.get_cnf()]))
+
+    def get_dimacs_map(self):
+        variables = self.get_all_variables()
+        numbers = [i+1 for i in range(len(variables))]
+        return dict(zip(variables, numbers))
+
+    def export_to_dimacs(self, filename):
+        dimacs_enc = self.get_dimacs_map()
+
+        file = open(filename, "w")
+        file.write("c ENC2\n")
+        file.write("p cnf " + str(len(self.get_all_variables())) + " " + str(len(self.get_cnf())) + "\n")
+
+        for disjunction in self.get_cnf():
+            for lit in disjunction.literals:
+                if lit.positive:
+                    file.write(str(dimacs_enc[lit]))
+                else:
+                    file.write(str(-dimacs_enc[lit]))
+                file.write(" ")
+            file.write(str(0))
+            file.write("\n")
+        file.close()
+
+    def get_weights(self):
+        weights = []
+        for literal in self.get_all_variables():
+            if type(literal.name) == ParameterVariable and literal.positive:
+                weights.append(Weight(literal, self.graph.get_probability(literal.name)))
+            else:
+                weights.append(Weight(literal, 1))
+        return weights
