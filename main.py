@@ -80,11 +80,12 @@ def main():
         print(clause)
     enc2.export_to_dimacs("out/enc2.cnf")
     enc2.export_enc_to_latex("out/enc2_enc.tex")
-    #enc2.export_enc_to_latex("out/enc2_weights.tex")
+    enc2.export_weights_to_latex("out/enc2_weights.tex")
 
     weights = enc2.get_weights()
     for weight in weights:
         print(weight)
+
 
 if __name__ == '__main__':
     main()
