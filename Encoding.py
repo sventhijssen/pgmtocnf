@@ -1,4 +1,5 @@
 import itertools
+import re
 
 from Instance import Instance
 from Logic import Clause, Literal, Conjunction, Equivalence, Disjunction, Implication
@@ -31,7 +32,7 @@ class Encoding1:
 
         parameter_clauses = self.get_parameter_clauses()
         for p in parameter_clauses:  # a parameter clause is an equivalence
-            #print(p)
+            # print(p)
             cnf = p.get_cnf()
             for lst in cnf:
                 for cjn in lst:
@@ -47,15 +48,15 @@ class Encoding1:
         for node in self.graph.nodes:
             clause = Clause()
             for i in range(len(node.get_values())):
-                clause.__add__(Literal(IndicatorVariable(node, i+1)))
+                clause.__add__(Literal(IndicatorVariable(node, i + 1)))
             clauses.append(clause)
 
         for node in self.graph.nodes:
             for i in range(len(node.get_values())):
-                for j in range(i+1, len(node.get_values())):
+                for j in range(i + 1, len(node.get_values())):
                     clause = Clause()
-                    clause.__add__(Literal(IndicatorVariable(node, i+1), False))
-                    clause.__add__(Literal(IndicatorVariable(node, j+1), False))
+                    clause.__add__(Literal(IndicatorVariable(node, i + 1), False))
+                    clause.__add__(Literal(IndicatorVariable(node, j + 1), False))
                     clauses.append(clause)
 
         return clauses
@@ -67,7 +68,8 @@ class Encoding1:
             # if no edge incoming in the node
             if node not in self.graph.get_end_nodes():
                 for i in range(len(node.get_values())):
-                    equivalences.append(Equivalence(Literal(IndicatorVariable(node, i+1)), Literal(ParameterVariable(node, i+1))))
+                    equivalences.append(
+                        Equivalence(Literal(IndicatorVariable(node, i + 1)), Literal(ParameterVariable(node, i + 1))))
 
                 clauses.extend(equivalences)
 
@@ -85,10 +87,11 @@ class Encoding1:
                     nl = []
                     for v in l:
                         nl.append(Literal(IndicatorVariable(v.get_node(), v.get_value())))
-                    lst += [nl + [Literal(IndicatorVariable(node, v)), Literal(ParameterVariable(node, v, l))] for v in node.get_values()]
-                #clauses.extend(lst)
+                    lst += [nl + [Literal(IndicatorVariable(node, v)), Literal(ParameterVariable(node, v, l))] for v in
+                            node.get_values()]
+                # clauses.extend(lst)
                 for it in lst:
-                    clauses.append((Equivalence(Conjunction(it[:len(it)-1]), it[len(it)-1])))
+                    clauses.append((Equivalence(Conjunction(it[:len(it) - 1]), it[len(it) - 1])))
 
         return clauses
 
@@ -97,7 +100,7 @@ class Encoding1:
 
     def get_dimacs_map(self):
         variables = self.get_all_variables()
-        numbers = [i+1 for i in range(len(variables))]
+        numbers = [i + 1 for i in range(len(variables))]
         return dict(zip(variables, numbers))
 
     def export_to_dimacs(self, filename):
@@ -121,11 +124,41 @@ class Encoding1:
     def get_weights(self):
         weights = []
         for literal in self.get_all_variables():
-            if type(literal.name) == ParameterVariable and literal.positive:
-                weights.append(Weight(literal, self.graph.get_probability(literal.name)))
+            if type(literal.name) == ParameterVariable:
+                weights.append(Weight(literal, True, self.graph.get_probability(literal.name)))
+                weights.append(Weight(literal, False, 1))
             else:
-                weights.append(Weight(literal, 1))
+                weights.append(Weight(literal, True, 1))
+                weights.append(Weight(literal, False, 1))
         return weights
+
+    def export_enc_to_latex(self, filename):
+        file = open(filename, "w")
+        for clause in self.get_cnf():
+            file.write('$')
+            for i in range(len(clause.literals)):
+                m = re.match(r"([a-z]+)_([a-z0-9]+(?:\|[a-z0-9]+)*)", str(clause.literals[i].name))
+                if not clause.literals[i].positive:
+                    file.write('\\neg')
+                file.write('\\{0}_{{{1}}}'.format(m.group(1), m.group(2)))
+                if i < len(clause.literals)-1:
+                    file.write(' \\vee ')
+            file.write('$')
+            file.write('\\\\\n')
+        file.close()
+
+    def export_weights_to_latex(self, filename):
+        file = open(filename, "w")
+        for weight in self.get_weights():
+            file.write('$')
+            m = re.match(r"([a-z]+)_([a-z0-9]+(?:\|[a-z0-9]+)*)", str(weight.variable))
+            if weight.positive:
+                file.write('W(\\{0}_{{{1}}})={2}'.format(m.group(1), m.group(2), weight.probability))
+            else:
+                file.write('W(\\neg\\{0}_{{{1}}})={2}'.format(m.group(1), m.group(2), weight.probability))
+            file.write('$')
+            file.write('\\\\\n')
+        file.close()
 
 
 class Encoding2:
@@ -170,15 +203,15 @@ class Encoding2:
         for node in self.graph.nodes:
             clause = Clause()
             for i in range(len(node.get_values())):
-                clause.__add__(Literal(IndicatorVariable(node, i+1)))
+                clause.__add__(Literal(IndicatorVariable(node, i + 1)))
             clauses.append(clause)
 
         for node in self.graph.nodes:
             for i in range(len(node.get_values())):
-                for j in range(i+1, len(node.get_values())):
+                for j in range(i + 1, len(node.get_values())):
                     clause = Clause()
-                    clause.__add__(Literal(IndicatorVariable(node, i+1), False))
-                    clause.__add__(Literal(IndicatorVariable(node, j+1), False))
+                    clause.__add__(Literal(IndicatorVariable(node, i + 1), False))
+                    clause.__add__(Literal(IndicatorVariable(node, j + 1), False))
                     clauses.append(clause)
 
         return clauses
@@ -187,23 +220,24 @@ class Encoding2:
         clauses = []
         implications = []
         for node in self.graph.nodes:
-            #if no edge incoming in the node
+            # if no edge incoming in the node
             if node not in self.graph.get_end_nodes():
                 parameters = []
                 for i in range(len(node.get_values())):
 
                     parameterscopy = parameters.copy()
-                    if i < len(node.get_values())-1:
-                        parameterscopy.append(Literal(ParameterVariable(node, i+1), True))
+                    if i < len(node.get_values()) - 1:
+                        parameterscopy.append(Literal(ParameterVariable(node, i + 1), True))
 
-                    implications.append(Implication(Conjunction(parameterscopy), Literal(IndicatorVariable(node, i+1))))
+                    implications.append(
+                        Implication(Conjunction(parameterscopy), Literal(IndicatorVariable(node, i + 1))))
 
                     if i < len(node.get_values()) - 1:
                         parameters.append(parameterscopy[-1].negate())
 
                 clauses.extend(implications)
 
-            #edges coming into the node
+            # edges coming into the node
             else:
                 values = []
                 conditions = []
@@ -226,7 +260,8 @@ class Encoding2:
                             parameterscopy.append(Literal(ParameterVariable(node, v, l)))
                         if i < len(node.get_values()):
                             parameters.append(Literal(ParameterVariable(node, v, l), False))
-                        clauses.append((Implication(Conjunction(nl + parameterscopy), Literal(IndicatorVariable(node, v)))))
+                        clauses.append(
+                            (Implication(Conjunction(nl + parameterscopy), Literal(IndicatorVariable(node, v)))))
 
         return clauses
 
@@ -235,7 +270,7 @@ class Encoding2:
 
     def get_dimacs_map(self):
         variables = self.get_all_variables()
-        numbers = [i+1 for i in range(len(variables))]
+        numbers = [i + 1 for i in range(len(variables))]
         return dict(zip(variables, numbers))
 
     def export_to_dimacs(self, filename):
@@ -259,8 +294,25 @@ class Encoding2:
     def get_weights(self):
         weights = []
         for literal in self.get_all_variables():
-            if type(literal.name) == ParameterVariable and literal.positive:
-                weights.append(Weight(literal, self.graph.get_probability(literal.name)))
+            if type(literal.name) == ParameterVariable:
+                weights.append(Weight(literal, True, self.graph.get_probability(literal.name)))
+                weights.append(Weight(literal, False, 1))
             else:
-                weights.append(Weight(literal, 1))
+                weights.append(Weight(literal, True, 1))
+                weights.append(Weight(literal, False, 1))
         return weights
+
+    def export_enc_to_latex(self, filename):
+        file = open(filename, "w")
+        for clause in self.get_cnf():
+            file.write('$')
+            for i in range(len(clause.literals)):
+                m = re.match(r"([a-z]+)_([a-z0-9]+(?:\|[a-z0-9]+)*)", str(clause.literals[i].name))
+                if not clause.literals[i].positive:
+                    file.write('\\neg')
+                file.write('\\{0}_{{{1}}}'.format(m.group(1), m.group(2)))
+                if i < len(clause.literals)-1:
+                    file.write(' \\vee ')
+            file.write('$')
+            file.write('\\\\\n')
+        file.close()

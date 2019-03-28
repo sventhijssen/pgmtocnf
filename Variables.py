@@ -41,6 +41,7 @@ class ParameterVariable:
             return "theta_{0}{1}".format(str(self.conditional_node.name), str(self.conditional_value))
         else:
             out = "theta_" + str(self.conditional_node.name) + str(self.conditional_value) + "|"
+
             i = 0
             for cond in self.condition:
                 out += str(cond.get_node().name)
