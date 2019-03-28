@@ -294,43 +294,35 @@ class Encoding2:
     def get_weights(self):
         weights = []
         variables = list(self.get_all_variables())
+        for var in variables:
+            if not var.positive:
+                var.positive = True
         vars_map = {}
         for literal in variables:
             if type(literal.name) == ParameterVariable:
                 pv = literal.name
                 if not (pv.condition, pv.conditional_node.name) in vars_map.keys():
-                    vars_map[(pv.condition, pv.conditional_node.name)] = [pv]
+                    vars_map[(pv.condition, pv.conditional_node.name)] = [literal]
                 else:
-                    vars_map[(pv.condition, pv.conditional_node.name)].append(pv)
+                    vars_map[(pv.condition, pv.conditional_node.name)].append(literal)
 
         # Create an ordered domain
         for k, v in vars_map.items():
-            vars_map[k] = sorted(v, key=lambda x: x.conditional_value)
+            vars_map[k] = sorted(v, key=lambda x: x.name.conditional_value)
 
         for k in vars_map.keys():
-            if len(vars_map[k]) > 1:
-                s = 0
-                for i in range(len(vars_map[k])):
-                    literal = vars_map[k][i]
-                    weights.append(Weight(literal, True, self.graph.get_probability(literal)/(1-s)))
-                    weights.append(Weight(literal, False, 1-(self.graph.get_probability(literal) / (1 - s))))
-                    s += self.graph.get_probability(literal)
-            #else:
-               # weights.append(Weight(literal, True, ))
+            s = 0
+            for i in range(len(vars_map[k])):
+                literal = vars_map[k][i]
+                weights.append(Weight(literal, True, self.graph.get_probability(literal.name)/(1-s)))
+                weights.append(Weight(literal, False, 1-(self.graph.get_probability(literal.name) / (1 - s))))
+                s += self.graph.get_probability(literal.name)
 
-        for w in weights:
-            print(w)
-
-
-        # for literal in vars:
-        #     print(literal)
-            # if type(literal.name) == ParameterVariable:
-            #     weights.append(Weight(literal, True, self.graph.get_probability(literal.name)))
-            #     weights.append(Weight(literal, False, 1))
-        #     else:
-        #         weights.append(Weight(literal, True, 1))
-        #         weights.append(Weight(literal, False, 1))
-        # return weights
+        for literal in variables:
+            if type(literal.name) == IndicatorVariable:
+                weights.append(Weight(literal, True, 1))
+                weights.append(Weight(literal, False, 1))
+        return weights
 
     def export_enc_to_latex(self, filename):
         file = open(filename, "w")

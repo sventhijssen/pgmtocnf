@@ -83,8 +83,8 @@ def main():
     #enc2.export_enc_to_latex("out/enc2_weights.tex")
 
     weights = enc2.get_weights()
-    #for weight in weights:
-        #print(weight)
+    for weight in weights:
+        print(weight)
 
 if __name__ == '__main__':
     main()
