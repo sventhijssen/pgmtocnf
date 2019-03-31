@@ -1,5 +1,6 @@
 from Graph import Node, Edge, Graph
 from Probability import Probability
+from main import main
 
 a = Node("a", [1, 2])
 b = Node("b", [1, 2])
@@ -25,3 +26,6 @@ w11 = Probability((c, 2), 0.09, [(a, 2)])
 w12 = Probability((c, 3), 0.9, [(a, 2)])
 
 graph = Graph([a, b, c], [e1, e2], [w1, w2, w3, w4, w5, w6, w7, w8, w9, w10, w11, w12])
+
+if __name__ == '__main__':
+    main(graph)
