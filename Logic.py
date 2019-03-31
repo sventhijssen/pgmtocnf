@@ -32,7 +32,7 @@ class Literal:
 
     def __eq__(self, other):
         if isinstance(other, Literal):
-            return self.name == other.name
+            return self.name == other.name and self.positive == other.positive
         return False
 
     def __hash__(self):

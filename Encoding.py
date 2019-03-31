@@ -125,11 +125,15 @@ class Encoding1:
         weights = []
         for literal in self.get_all_variables():
             if type(literal.name) == ParameterVariable:
-                weights.append(Weight(literal, True, self.graph.get_probability(literal.name)))
-                weights.append(Weight(literal, False, 1))
+                if literal.positive:
+                    weights.append(Weight(literal, self.graph.get_probability(literal.name)))
+                else:
+                    weights.append(Weight(literal, 1))
             else:
-                weights.append(Weight(literal, True, 1))
-                weights.append(Weight(literal, False, 1))
+                if literal.positive:
+                    weights.append(Weight(literal, 1))
+                else:
+                    weights.append(Weight(literal, 1))
         return weights
 
     def export_enc_to_latex(self, filename):
@@ -151,10 +155,11 @@ class Encoding1:
         file = open(filename, "w")
         for weight in self.get_weights():
             file.write('$')
-            m = re.match(r"([A-Za-z]+)_([A-Za-z0-9]+(?:\|[A-Za-z0-9]+)*)", str(weight.variable))
-            if weight.positive:
+            if weight.variable.positive:
+                m = re.match(r"([A-Za-z]+)_([A-Za-z0-9]+(?:\|[A-Za-z0-9]+)*)", str(weight.variable))
                 file.write('W(\\{0}_{{{1}}})={2}'.format(m.group(1), m.group(2), weight.probability))
             else:
+                m = re.match(r"\\\+([A-Za-z]+)_([A-Za-z0-9]+(?:\|[A-Za-z0-9]+)*)", str(weight.variable))
                 file.write('W(\\neg\\{0}_{{{1}}})={2}'.format(m.group(1), m.group(2), weight.probability))
             file.write('$')
             file.write('\\\\\n')
@@ -314,14 +319,14 @@ class Encoding2:
             s = 0
             for i in range(len(vars_map[k])):
                 literal = vars_map[k][i]
-                weights.append(Weight(literal, True, self.graph.get_probability(literal.name)/(1-s)))
-                weights.append(Weight(literal, False, 1-(self.graph.get_probability(literal.name) / (1 - s))))
+                weights.append(Weight(literal, self.graph.get_probability(literal.name)/(1-s)))
+                weights.append(Weight(literal, 1-(self.graph.get_probability(literal.name) / (1 - s))))
                 s += self.graph.get_probability(literal.name)
 
         for literal in variables:
             if type(literal.name) == IndicatorVariable:
-                weights.append(Weight(literal, True, 1))
-                weights.append(Weight(literal, False, 1))
+                weights.append(Weight(literal, 1))
+                #weights.append(Weight(literal, 1))
         return weights
 
     def export_enc_to_latex(self, filename):
@@ -346,7 +351,7 @@ class Encoding2:
             v = str(weight.variable)
             v.replace('theta', 'rho')
             m = re.match(r"([A-Za-z]+)_([A-Za-z0-9]+(?:\|[A-Za-z0-9]+)*)", v)
-            if weight.positive:
+            if weight.variable.positive:
                 file.write('W(\\{0}_{{{1}}})={2}'.format(m.group(1), m.group(2), weight.probability))
             else:
                 file.write('W(\\neg\\{0}_{{{1}}})={2}'.format(m.group(1), m.group(2), weight.probability))
