@@ -137,7 +137,7 @@ class Encoding1:
         for clause in self.get_cnf():
             file.write('$')
             for i in range(len(clause.literals)):
-                m = re.match(r"([a-z]+)_([a-z0-9]+(?:\|[a-z0-9]+)*)", str(clause.literals[i].name))
+                m = re.match(r"([A-Za-z]+)_([A-Za-z0-9]+(?:\|[A-Za-z0-9]+)*)", str(clause.literals[i].name))
                 if not clause.literals[i].positive:
                     file.write('\\neg')
                 file.write('\\{0}_{{{1}}}'.format(m.group(1), m.group(2)))
@@ -151,7 +151,7 @@ class Encoding1:
         file = open(filename, "w")
         for weight in self.get_weights():
             file.write('$')
-            m = re.match(r"([a-z]+)_([a-z0-9]+(?:\|[a-z0-9]+)*)", str(weight.variable))
+            m = re.match(r"([A-Za-z]+)_([A-Za-z0-9]+(?:\|[A-Za-z0-9]+)*)", str(weight.variable))
             if weight.positive:
                 file.write('W(\\{0}_{{{1}}})={2}'.format(m.group(1), m.group(2), weight.probability))
             else:
@@ -329,7 +329,7 @@ class Encoding2:
         for clause in self.get_cnf():
             file.write('$')
             for i in range(len(clause.literals)):
-                m = re.match(r"([a-z]+)_([a-z0-9]+(?:\|[a-z0-9]+)*)", str(clause.literals[i].name).replace('theta', 'rho'))
+                m = re.match(r"([A-Za-z]+)_([A-Za-z0-9]+(?:\|[A-Za-z0-9]+)*)", str(clause.literals[i].name).replace('theta', 'rho'))
                 if not clause.literals[i].positive:
                     file.write('\\neg')
                 file.write('\\{0}_{{{1}}}'.format(m.group(1), m.group(2)))
@@ -345,7 +345,7 @@ class Encoding2:
             file.write('$')
             v = str(weight.variable)
             v.replace('theta', 'rho')
-            m = re.match(r"([a-z]+)_([a-z0-9]+(?:\|[a-z0-9]+)*)", v)
+            m = re.match(r"([A-Za-z]+)_([A-Za-z0-9]+(?:\|[A-Za-z0-9]+)*)", v)
             if weight.positive:
                 file.write('W(\\{0}_{{{1}}})={2}'.format(m.group(1), m.group(2), weight.probability))
             else:
