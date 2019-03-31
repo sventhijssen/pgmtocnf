@@ -299,9 +299,6 @@ class Encoding2:
     def get_weights(self):
         weights = []
         variables = list(self.get_all_variables())
-        for var in variables:
-            if not var.positive:
-                var.positive = True
         vars_map = {}
         for literal in variables:
             if type(literal.name) == ParameterVariable:
@@ -316,12 +313,16 @@ class Encoding2:
             vars_map[k] = sorted(v, key=lambda x: x.name.conditional_value)
 
         for k in vars_map.keys():
-            s = 0
+            s1 = 0
+            s2 = 0
             for i in range(len(vars_map[k])):
                 literal = vars_map[k][i]
-                weights.append(Weight(literal, self.graph.get_probability(literal.name)/(1-s)))
-                weights.append(Weight(literal, 1-(self.graph.get_probability(literal.name) / (1 - s))))
-                s += self.graph.get_probability(literal.name)
+                if literal.positive:
+                    weights.append(Weight(literal, self.graph.get_probability(literal.name)/(1-s1)))
+                    s1 += self.graph.get_probability(literal.name)
+                else:
+                    weights.append(Weight(literal, 1-(self.graph.get_probability(literal.name) / (1 - s2))))
+                    s2 += self.graph.get_probability(literal.name)
 
         for literal in variables:
             if type(literal.name) == IndicatorVariable:
@@ -350,10 +351,11 @@ class Encoding2:
             file.write('$')
             v = str(weight.variable)
             v.replace('theta', 'rho')
-            m = re.match(r"([A-Za-z]+)_([A-Za-z0-9]+(?:\|[A-Za-z0-9]+)*)", v)
             if weight.variable.positive:
+                m = re.match(r"([A-Za-z]+)_([A-Za-z0-9]+(?:\|[A-Za-z0-9]+)*)", v)
                 file.write('W(\\{0}_{{{1}}})={2}'.format(m.group(1), m.group(2), weight.probability))
             else:
+                m = re.match(r"\\\+([A-Za-z]+)_([A-Za-z0-9]+(?:\|[A-Za-z0-9]+)*)", v)
                 file.write('W(\\neg\\{0}_{{{1}}})={2}'.format(m.group(1), m.group(2), weight.probability))
             file.write('$')
             file.write('\\\\\n')
