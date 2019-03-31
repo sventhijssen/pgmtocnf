@@ -1,0 +1,75 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{listings}
+
+\title{Probabilistic Programming}
+\author{Gillis Hermans, Sven Thijssen}
+\date{March 2019}
+
+\begin{document}
+
+\maketitle
+
+\section{PGM to CNF}
+
+The Bayesian network with full CPTs can be rewritten as noisy-ORs. We therefore assume the following \cite{noisyor}:
+\begin{itemize}
+    \item All possible causes $X_i$ for an event $Y$ are listed
+    \item The negated clauses $\neg X_i$ do not have an influence on $Y$
+    \item Independent failure probability $q_i$ for each cause alone
+\end{itemize}
+
+We can observe that if all diseases are False, the occurrence of a symptom is not $0$ but rather $0.1$ for each of the symptoms. We therefore introduce a leaky node with a probability $l = P(P(Y \mid \bar{X_i}, \forall i = 1..n)$.
+Using this leaky probability, we can compute the leaky noise OR as follows:
+$$P(Y \mid X_i) = 1-(1-l) \times \prod_{X_i \in X_T}\frac{1-p_i}{1-l}$$\\
+
+\begin{table}[h]
+\centering
+\begin{tabular}{l l l l | l | l | l | l}
+	\hline
+	$X_I$	&	$X_O$	&	$X_R$	&	$L$		&	$P(Y_T)$		&	$P(Y_S)$		&	$P(Y_N)$\\
+	\hline
+	F		&	F		&	F		&	T		&	0.10			&	0.10			&	0.10\\
+	F		&	F		&	T		&	T		&	0.73			&	0.9910		&	0.55\\
+	F		&	T		&	F		&	T		&	0.10			&	0.9910		&	0.10\\
+	T		&	F		&	F		&	T		&	0.64			&	0.19			&	0.2350\\
+	\hline
+\end{tabular}
+\caption{Leaky noisy OR}
+\end{table}
+
+For the first part of the assignment, we have written a script which computes both encoding 1 and 2, based on a given probabilistic graphical model. The source code can be found here:
+\subsection{Full CPTs with ENC1}
+\subsubsection{Variables}
+\input{../out/enc1_enc.tex}
+\subsubsection{Weights}
+\input{../out/enc1_weights.tex}
+\subsubsection{Variables}
+\subsubsection{Weights}
+\subsection{Noisy-ORs with ENC1}
+\subsection{Full CPTs with ENC2}
+\subsection{Noisy-ORs with ENC2}
+\section{SRL to CNF}
+\subsection{Write the encoding for the ProbLog program as CNF and associatedweights.}
+For this task we followed the approach of \cite{Fierens} which is split into three steps. Ground the program so that it only contains the necessary part needed for the given evidence and query. Convert the following ground rules to a CNF and finally defining a weight function for all atoms.
+
+\subsubsection{Grounding}
+A probabilistic rule can always be rewritten to a deterministic rule and a probabilistic fact. "p :: f :- g." becomes "p :: f\_fact. f :- g, f\_fact."
+
+All atoms and rules are ground according to the dependancy set of the evidence E and the query Q. However not all ground rules are active.
+\\\\
+\textbf{The inititial problog program:}
+\\
+\lstinputlisting{problog1.txt}
+\textbf{The ground problog program:}
+\\
+\lstinputlisting{problogground.txt}
+
+\subsubsection{CNF}
+\subsubsection{Weights}
+
+
+\bibliography{references}
+\bibliographystyle{ieeetr}
+
+\end{document}

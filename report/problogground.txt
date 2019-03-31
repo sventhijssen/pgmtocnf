@@ -1,0 +1,16 @@
+increaseOsteoblasts_p :- calcium.\\
+0.5::increaseOsteoblasts_n :- calcium, bispho.\\
+reduceOsteoclasts :- reduceOsteoclasts_p, \textbackslash+reduceOsteoclasts_n.\\
+reduceOsteoclasts_p :- bispho.\\
+1.0::reduceOsteoclasts_n :- calcium, bispho.\\
+increaseOsteoblasts :- increaseOsteoblasts_p, \textbackslash+increaseOsteoblasts_n.\\
+osteoprosis_p :- initialOsteoprosis.\\
+0.85::osteoprosis_n :- reduceOsteoclasts.\\
+0.15::osteoprosis_n :- increaseOsteoblasts.\\
+osteoprosis :- osteoprosis_p, \textbackslash+osteoprosis_n.\\
+0.5::calcium. 0.5::bispho. 0.5::initialOsteoprosis.\\
+evidence(initialOsteoprosis, true).\\
+evidence(calcium, true).\\
+evidence(bispho, false).\\
+query(osteoprosis).\\
+
