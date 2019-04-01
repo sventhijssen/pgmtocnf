@@ -15,33 +15,33 @@ class Clause:
 class Literal:
 
     def __init__(self, name, positive=True):
-        self.name = name
+        self.atom = name
         self.positive = positive
 
     def __str__(self):
         if self.positive:
-            return str(self.name)
+            return str(self.atom)
         else:
-            return "\+" + str(self.name)
+            return "\+" + str(self.atom)
 
     def __repr__(self):
         if self.positive:
-            return str(self.name)
+            return str(self.atom)
         else:
-            return "\+" + str(self.name)
+            return "\+" + str(self.atom)
 
     def __eq__(self, other):
         if isinstance(other, Literal):
-            return self.name == other.name and self.positive == other.positive
+            return self.atom == other.atom and self.positive == other.positive
         return False
 
     def __hash__(self):
-        return hash(self.name)
+        return hash(self.atom)
 
     def negate(self):
         if self.positive:
-            return Literal(self.name, False)
-        return Literal(self.name, True)
+            return Literal(self.atom, False)
+        return Literal(self.atom, True)
 
 
 class Equivalence:

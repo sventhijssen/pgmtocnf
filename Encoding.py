@@ -95,8 +95,14 @@ class Encoding1:
 
         return clauses
 
+    def get_all_literals(self):
+        literals_list = [disjunction.literals for disjunction in self.get_cnf()]
+        literals = list(itertools.chain(*literals_list))
+        return literals
+
     def get_all_variables(self):
-        return set(itertools.chain(*[disjunction.literals for disjunction in self.get_cnf()]))
+        literals = self.get_all_literals()
+        return set([literal.atom for literal in literals])
 
     def get_dimacs_map(self):
         variables = self.get_all_variables()
@@ -111,11 +117,11 @@ class Encoding1:
         file.write("p cnf " + str(len(self.get_all_variables())) + " " + str(len(self.get_cnf())) + "\n")
 
         for disjunction in self.get_cnf():
-            for lit in disjunction.literals:
-                if lit.positive:
-                    file.write(str(dimacs_enc[lit]))
+            for literal in disjunction.literals:
+                if literal.positive:
+                    file.write(str(dimacs_enc[literal.atom]))
                 else:
-                    file.write(str(-dimacs_enc[lit]))
+                    file.write(str(-dimacs_enc[literal.atom]))
                 file.write(" ")
             file.write(str(0))
             file.write("\n")
@@ -123,10 +129,10 @@ class Encoding1:
 
     def get_weights(self):
         weights = []
-        for literal in self.get_all_variables():
-            if type(literal.name) == ParameterVariable:
+        for literal in self.get_all_literals():
+            if type(literal.atom) == ParameterVariable:
                 if literal.positive:
-                    weights.append(Weight(literal, self.graph.get_probability(literal.name)))
+                    weights.append(Weight(literal, self.graph.get_probability(literal.atom)))
                 else:
                     weights.append(Weight(literal, 1))
             else:
@@ -134,14 +140,14 @@ class Encoding1:
                     weights.append(Weight(literal, 1))
                 else:
                     weights.append(Weight(literal, 1))
-        return weights
+        return set(weights)
 
     def export_enc_to_latex(self, filename):
         file = open(filename, "w")
         for clause in self.get_cnf():
             file.write('$')
             for i in range(len(clause.literals)):
-                m = re.match(r"([A-Za-z]+)_([A-Za-z0-9]+(?:\|[A-Za-z0-9]+)*)", str(clause.literals[i].name))
+                m = re.match(r"([A-Za-z]+)_([A-Za-z0-9]+(?:\|[A-Za-z0-9]+)*)", str(clause.literals[i].atom))
                 if not clause.literals[i].positive:
                     file.write('\\neg')
                 file.write('\\{0}_{{{1}}}'.format(m.group(1), m.group(2)))
@@ -301,8 +307,8 @@ class Encoding2:
         variables = list(self.get_all_variables())
         vars_map = {}
         for literal in variables:
-            if type(literal.name) == ParameterVariable:
-                pv = literal.name
+            if type(literal.atom) == ParameterVariable:
+                pv = literal.atom
                 if not (pv.condition, pv.conditional_node.name) in vars_map.keys():
                     vars_map[(pv.condition, pv.conditional_node.name)] = [literal]
                 else:
@@ -310,7 +316,7 @@ class Encoding2:
 
         # Create an ordered domain
         for k, v in vars_map.items():
-            vars_map[k] = sorted(v, key=lambda x: x.name.conditional_value)
+            vars_map[k] = sorted(v, key=lambda x: x.atom.conditional_value)
 
         for k in vars_map.keys():
             s1 = 0
@@ -318,24 +324,24 @@ class Encoding2:
             for i in range(len(vars_map[k])):
                 literal = vars_map[k][i]
                 if literal.positive:
-                    weights.append(Weight(literal, self.graph.get_probability(literal.name)/(1-s1)))
-                    s1 += self.graph.get_probability(literal.name)
+                    weights.append(Weight(literal, self.graph.get_probability(literal.atom)/(1-s1)))
+                    s1 += self.graph.get_probability(literal.atom)
                 else:
-                    weights.append(Weight(literal, 1-(self.graph.get_probability(literal.name) / (1 - s2))))
-                    s2 += self.graph.get_probability(literal.name)
+                    weights.append(Weight(literal, 1-(self.graph.get_probability(literal.atom) / (1 - s2))))
+                    s2 += self.graph.get_probability(literal.atom)
 
         for literal in variables:
-            if type(literal.name) == IndicatorVariable:
+            if type(literal.atom) == IndicatorVariable:
                 weights.append(Weight(literal, 1))
                 #weights.append(Weight(literal, 1))
-        return weights
+        return set(weights)
 
     def export_enc_to_latex(self, filename):
         file = open(filename, "w")
         for clause in self.get_cnf():
             file.write('$')
             for i in range(len(clause.literals)):
-                m = re.match(r"([A-Za-z]+)_([A-Za-z0-9]+(?:\|[A-Za-z0-9]+)*)", str(clause.literals[i].name).replace('theta', 'rho'))
+                m = re.match(r"([A-Za-z]+)_([A-Za-z0-9]+(?:\|[A-Za-z0-9]+)*)", str(clause.literals[i].atom).replace('theta', 'rho'))
                 if not clause.literals[i].positive:
                     file.write('\\neg')
                 file.write('\\{0}_{{{1}}}'.format(m.group(1), m.group(2)))
