@@ -114,6 +114,26 @@ class Encoding1:
 
         file = open(filename, "w")
         file.write("c ENC1\n")
+        file.write("c weights ")
+        positive_weights = []
+        negative_weights = []
+        for key in dimacs_enc.keys():  # we assume the dimacs encoding is sorted from 1..N
+            for w in self.get_weights():
+                if w.literal.atom == key:
+                    if w.literal.positive:
+                        positive_weights.append(w.probability)
+                    else:
+                        negative_weights.append(w.probability)
+
+        for i in range(len(positive_weights)):
+            file.write(str(positive_weights[i]))
+            file.write(" ")
+            file.write(str(negative_weights[i]))
+            if i < len(positive_weights)-1:
+                file.write(" ")
+            else:
+                file.write("\n")
+
         file.write("p cnf " + str(len(self.get_all_variables())) + " " + str(len(self.get_cnf())) + "\n")
 
         for disjunction in self.get_cnf():
@@ -161,11 +181,11 @@ class Encoding1:
         file = open(filename, "w")
         for weight in self.get_weights():
             file.write('$')
-            if weight.variable.positive:
-                m = re.match(r"([A-Za-z]+)_([A-Za-z0-9]+(?:\|[A-Za-z0-9]+)*)", str(weight.variable))
+            if weight.literal.positive:
+                m = re.match(r"([A-Za-z]+)_([A-Za-z0-9]+(?:\|[A-Za-z0-9]+)*)", str(weight.literal))
                 file.write('W(\\{0}_{{{1}}})={2}'.format(m.group(1), m.group(2), weight.probability))
             else:
-                m = re.match(r"\\\+([A-Za-z]+)_([A-Za-z0-9]+(?:\|[A-Za-z0-9]+)*)", str(weight.variable))
+                m = re.match(r"\\\+([A-Za-z]+)_([A-Za-z0-9]+(?:\|[A-Za-z0-9]+)*)", str(weight.literal))
                 file.write('W(\\neg\\{0}_{{{1}}})={2}'.format(m.group(1), m.group(2), weight.probability))
             file.write('$')
             file.write('\\\\\n')
@@ -355,9 +375,9 @@ class Encoding2:
         file = open(filename, "w")
         for weight in self.get_weights():
             file.write('$')
-            v = str(weight.variable)
+            v = str(weight.literal)
             v.replace('theta', 'rho')
-            if weight.variable.positive:
+            if weight.literal.positive:
                 m = re.match(r"([A-Za-z]+)_([A-Za-z0-9]+(?:\|[A-Za-z0-9]+)*)", v)
                 file.write('W(\\{0}_{{{1}}})={2}'.format(m.group(1), m.group(2), weight.probability))
             else:
