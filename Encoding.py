@@ -296,8 +296,17 @@ class Encoding2:
 
         return clauses
 
+    def get_all_literals(self):
+        literals_list = [disjunction.literals for disjunction in self.get_cnf()]
+        literals = list(itertools.chain(*literals_list))
+        return literals
+
     def get_all_variables(self):
-        return set(itertools.chain(*[disjunction.literals for disjunction in self.get_cnf()]))
+        literals = self.get_all_literals()
+        return set([literal.atom for literal in literals])
+
+    # def get_all_variables(self):
+    #     return set(itertools.chain(*[disjunction.literals for disjunction in self.get_cnf()]))
 
     def get_dimacs_map(self):
         variables = self.get_all_variables()
@@ -309,14 +318,33 @@ class Encoding2:
 
         file = open(filename, "w")
         file.write("c ENC2\n")
-        file.write("p cnf " + str(len(self.get_all_variables())) + " " + str(len(self.get_cnf())) + "\n")
+        file.write("c weights ")
+        positive_weights = []
+        negative_weights = []
+        for key in dimacs_enc.keys():  # we assume the dimacs encoding is sorted from 1..N
+            for w in self.get_weights():
+                if w.literal.atom == key:
+                    if w.literal.positive:
+                        positive_weights.append(w.probability)
+                    else:
+                        negative_weights.append(w.probability)
+
+        for i in range(len(positive_weights)):
+            file.write(str(positive_weights[i]))
+            file.write(" ")
+            file.write(str(negative_weights[i]))
+            if i < len(positive_weights)-1:
+                file.write(" ")
+            else:
+                file.write("\n")
+        file.write("p cnf " + str(len(positive_weights)) + " " + str(len(self.get_cnf())) + "\n")
 
         for disjunction in self.get_cnf():
-            for lit in disjunction.literals:
-                if lit.positive:
-                    file.write(str(dimacs_enc[lit]))
+            for literal in disjunction.literals:
+                if literal.positive:
+                    file.write(str(dimacs_enc[literal.atom]))
                 else:
-                    file.write(str(-dimacs_enc[lit]))
+                    file.write(str(-dimacs_enc[literal.atom]))
                 file.write(" ")
             file.write(str(0))
             file.write("\n")
@@ -324,9 +352,9 @@ class Encoding2:
 
     def get_weights(self):
         weights = []
-        variables = list(self.get_all_variables())
+        literals = list(self.get_all_literals())
         vars_map = {}
-        for literal in variables:
+        for literal in literals:
             if type(literal.atom) == ParameterVariable:
                 pv = literal.atom
                 if not (pv.condition, pv.conditional_node.name) in vars_map.keys():
@@ -350,7 +378,7 @@ class Encoding2:
                     weights.append(Weight(literal, 1-(self.graph.get_probability(literal.atom) / (1 - s2))))
                     s2 += self.graph.get_probability(literal.atom)
 
-        for literal in variables:
+        for literal in literals:
             if type(literal.atom) == IndicatorVariable:
                 weights.append(Weight(literal, 1))
                 #weights.append(Weight(literal, 1))
