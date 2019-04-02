@@ -97,8 +97,8 @@ class Encoding1:
 
     def get_all_literals(self):
         literals_list = [disjunction.literals for disjunction in self.get_cnf()]
-        literals = list(itertools.chain(*literals_list))
-        return literals
+        literals = [item for sublist in literals_list for item in sublist]
+        return set(literals)
 
     def get_all_variables(self):
         literals = self.get_all_literals()
@@ -167,7 +167,7 @@ class Encoding1:
         for clause in self.get_cnf():
             file.write('$')
             for i in range(len(clause.literals)):
-                m = re.match(r"([A-Za-z]+)_([A-Za-z0-9]+(?:\|[A-Za-z0-9]+)*)", str(clause.literals[i].atom))
+                m = re.match(r"([A-Za-z]+)_([A-Za-z0-9]+(?:\|[A-Za-z0-9,]+)*)", str(clause.literals[i].atom))
                 if not clause.literals[i].positive:
                     file.write('\\neg')
                 file.write('\\{0}_{{{1}}}'.format(m.group(1), m.group(2)))
@@ -181,11 +181,10 @@ class Encoding1:
         file = open(filename, "w")
         for weight in self.get_weights():
             file.write('$')
+            m = re.match(r"([A-Za-z]+)_([A-Za-z0-9]+(?:\|[A-Za-z0-9,]+)*)", str(weight.literal.atom))
             if weight.literal.positive:
-                m = re.match(r"([A-Za-z]+)_([A-Za-z0-9]+(?:\|[A-Za-z0-9]+)*)", str(weight.literal))
                 file.write('W(\\{0}_{{{1}}})={2}'.format(m.group(1), m.group(2), weight.probability))
             else:
-                m = re.match(r"\\\+([A-Za-z]+)_([A-Za-z0-9]+(?:\|[A-Za-z0-9]+)*)", str(weight.literal))
                 file.write('W(\\neg\\{0}_{{{1}}})={2}'.format(m.group(1), m.group(2), weight.probability))
             file.write('$')
             file.write('\\\\\n')
@@ -298,15 +297,12 @@ class Encoding2:
 
     def get_all_literals(self):
         literals_list = [disjunction.literals for disjunction in self.get_cnf()]
-        literals = list(itertools.chain(*literals_list))
-        return literals
+        literals = [item for sublist in literals_list for item in sublist]
+        return set(literals)
 
     def get_all_variables(self):
         literals = self.get_all_literals()
         return set([literal.atom for literal in literals])
-
-    # def get_all_variables(self):
-    #     return set(itertools.chain(*[disjunction.literals for disjunction in self.get_cnf()]))
 
     def get_dimacs_map(self):
         variables = self.get_all_variables()
@@ -389,7 +385,7 @@ class Encoding2:
         for clause in self.get_cnf():
             file.write('$')
             for i in range(len(clause.literals)):
-                m = re.match(r"([A-Za-z]+)_([A-Za-z0-9]+(?:\|[A-Za-z0-9]+)*)", str(clause.literals[i].atom).replace('theta', 'rho'))
+                m = re.match(r"([A-Za-z]+)_([A-Za-z0-9]+(?:\|[A-Za-z0-9,]+)*)", str(clause.literals[i].atom).replace('theta', 'rho'))
                 if not clause.literals[i].positive:
                     file.write('\\neg')
                 file.write('\\{0}_{{{1}}}'.format(m.group(1), m.group(2)))
@@ -403,13 +399,12 @@ class Encoding2:
         file = open(filename, "w")
         for weight in self.get_weights():
             file.write('$')
-            v = str(weight.literal)
+            v = str(weight.literal.atom)
             v.replace('theta', 'rho')
+            m = re.match(r"([A-Za-z]+)_([A-Za-z0-9]+(?:\|[A-Za-z0-9,]+)*)", v)
             if weight.literal.positive:
-                m = re.match(r"([A-Za-z]+)_([A-Za-z0-9]+(?:\|[A-Za-z0-9]+)*)", v)
                 file.write('W(\\{0}_{{{1}}})={2}'.format(m.group(1), m.group(2), weight.probability))
             else:
-                m = re.match(r"\\\+([A-Za-z]+)_([A-Za-z0-9]+(?:\|[A-Za-z0-9]+)*)", v)
                 file.write('W(\\neg\\{0}_{{{1}}})={2}'.format(m.group(1), m.group(2), weight.probability))
             file.write('$')
             file.write('\\\\\n')
