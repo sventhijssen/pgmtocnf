@@ -94,6 +94,7 @@ w51 = Probability((s, 1), 0.0001, [(i, 2), (o, 2), (r, 2)])
 w52 = Probability((s, 2), 0.9999, [(i, 2), (o, 2), (r, 2)])
 w53 = Probability((n, 1), 0.3825, [(i, 2), (o, 2), (r, 2)])
 w54 = Probability((n, 2), 0.6175, [(i, 2), (o, 2), (r, 2)])
+
 graph = Graph(
     [i, o, r, t, s, n],
     [e1, e2, e3, e4, e5, e6, e7, e8, e9],

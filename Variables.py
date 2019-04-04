@@ -1,6 +1,6 @@
 class IndicatorVariable:
     """
-    We assume indicator variables are boolean and thus only
+    We assume indicator variables are boolean.
     """
     def __init__(self, node, value):
         self.node = node

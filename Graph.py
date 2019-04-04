@@ -1,3 +1,6 @@
+from Instance import Instance
+from Variables import ParameterVariable
+
 class Graph:
     def __init__(self, nodes, edges, probabilities):
         self.nodes = nodes
@@ -29,6 +32,74 @@ class Graph:
                 return prob.probability
         return 1
 
+class NoisyGraph:
+    def __init__(self, nodes, edges, probabilities):
+        self.nodes = nodes
+        self.edges = edges
+        self.probabilities = probabilities
+
+    def get_start_nodes(self):
+        start_nodes = []
+        for edge in self.edges:
+            start_nodes.append(edge.start)
+        return set(start_nodes)
+
+    def get_end_nodes(self):
+        end_nodes = []
+        for edge in self.edges:
+            end_nodes.append(edge.end)
+        return set(end_nodes)
+
+    def get_incoming_nodes(self, node):
+        incoming = []
+        for edge in self.edges:
+            if edge.end == node:
+                incoming.append(edge.start)
+        return incoming
+
+    def get_probability(self, parameter):
+        #for prob in self.probabilities:
+        #    if prob.parameter_variable == parameter:
+        #        return prob.probability
+
+        cond_node = parameter.conditional_node
+        cond_value = parameter.conditional_value
+        cond = parameter.condition
+        if len(cond) == 0:
+            if cond_value == 1:
+                return self.get_prob(ParameterVariable(cond_node,1))
+            else: return 1 - self.get_prob(ParameterVariable(cond_node,1))
+        if len(cond) == 1:
+            x,*_ = cond
+            if cond_value == 1:
+                return self.get_prob(ParameterVariable(cond_node,1,[x]))
+            else:
+                return (1 - self.get_prob(ParameterVariable(cond_node, 1, [x])))
+        else:
+            pr = 0
+            for c in cond:
+                if Instance.get_value(c) == 2:
+                    if pr == 0:
+                        pr = self.get_probability(
+                            ParameterVariable(cond_node, 1, [c]))
+                    else:
+                        pr = pr * self.get_probability(ParameterVariable(cond_node,1,[c]))
+                else:
+                    if pr == 0:
+                        pr = (1 - self.get_probability(
+                            ParameterVariable(cond_node, 1, [c])))
+                    else:
+                        pr = pr * (1 - self.get_probability(
+                        ParameterVariable(cond_node, 1, [c])))
+            if cond_value == 1:
+                return pr
+            else: return 1-pr
+
+    def get_prob(self,parameter):
+        for prob in self.probabilities:
+            if prob.parameter_variable == parameter:
+                return prob.probability
+        return 100
 
 class Node:
     def __init__(self, name, values=None):
