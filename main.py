@@ -10,6 +10,8 @@ def main(graph):
         print(clause)
     enc1.export_to_dimacs("out/enc1.cnf")
     enc1.export_enc_to_latex("out/enc1_enc.tex")
+    enc1.export_to_dimacs("out/enc1.cnf", 'pysdd')
+    enc1.export_to_dimacs("out/enc1.cnf", 'cachet')
     enc1.export_weights_to_latex("out/enc1_weights.tex")
 
     weights = enc1.get_weights()
