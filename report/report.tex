@@ -1,6 +1,7 @@
 \documentclass{article}
 \usepackage[utf8]{inputenc}
 \usepackage{listings}
+\usepackage{hyperref}
 \usepackage{titlesec}
 
 \title{Probabilistic Programming}
@@ -55,9 +56,7 @@ $P(\bar{X_R}) = 1 - 0.0001 = 0.9999$.\footnote{We indicate both diseases and sym
 \label{tab:leakynoisyor}
 \end{table}
 
-For the first part of the assignment, we have written a script which computes both \texttt{ENC1} and \texttt{ENC2}, based on a given probabilistic graphical model. We created a graph structure which represented the conditional probability table of the Bayesian network. For the noisy-OR, we adapted our code with minimal changes: we created a new type of graph (\texttt{NoisyGraph}) with a leaky probability value.
-
-See \textbf{Appendix} for the CNF and associated weights.
+For the first part of the assignment, we have written a program\footnote{Source code on GitHub: \href{https://github.com/sventhijssen/pgmtocnf}{https://github.com/sventhijssen/pgmtocnf}} to compute both \texttt{ENC1} and \texttt{ENC2}, based on a given probabilistic graphical model. We created a graph structure which represented the conditional probability table of the Bayesian network. For the noisy-OR, we adapted our code with minimal changes: we created a new type of graph (\texttt{NoisyGraph}) with a leaky probability value. See \hyperref[appendix]{Appendix} for the CNF and associated weights.
 
 \newpage
  
@@ -81,13 +80,13 @@ All atoms and rules are ground according to the dependancy set of the evidence E
 \subsection{Weighted Model Counting}
 
 \subsubsection{Use the SDD package and one other exact weighted model counter, and apply them to the CNFs of the previous tasks. Compute and report the WMC. Can you interpret them as probabilities?}
-In Table \ref{tab:wmc_pysdd_cachet}, we observe that the weighted model count for the different encodings using both \texttt{PySDD} and \texttt{Cachet} holds a value of approximately $1$. This is what we would expect: the weighted model count of the theory $\Delta$ is equivalent with summing all probabilities in the joint distribution.
+In Table \ref{tab:wmc_pysdd_cachet}, we observe that the weighted model count for the different encodings using  \textit{PySDD} holds a value of approximately $1$. This is what we would expect: the weighted model count of the theory $\Delta$ is equivalent with summing all probabilities in the joint distribution. This WMC could be interpreted as the probability that any model is chosen, which says nothing about the model. 
 $$WMC(\Delta) = \sum_{\omega \models \Delta} W(\omega)$$
 where
 $$W(\omega) = \prod_{\omega \models l}W(l)$$
 with $W(\omega)$ the weight assigned to each literal $l$.\cite{chavira}\\
-
-We obtain the following table (Table \ref{tab:wmc_pysdd_cachet}) for both \texttt{PySDD} and \texttt{Cachet}\footnote{Note that by adding weights in the CNF file, we were unable to find the weighted model count. This is most likely caused by an encoding error. However, if we leave the weights out, we obtain correct results for the model count.}
+For \textit{Cachet} we could not obtain a probability of 1 nor any solutions when adding weights to the CNF file. However, when leaving the weights out, we obtain the same model count (64) as with \textit{PySDD}.
+\footnote{We were unable to test any other Exact Model Counter due to compilation errors. Also some lines of code had to be adjusted to make \textit{Cachet} compile.}
 \begin{table}[h]
 \centering
 \begin{tabular}{l | l l}
@@ -97,21 +96,17 @@ We obtain the following table (Table \ref{tab:wmc_pysdd_cachet}) for both \textt
 	Full CPT ENC2	&	1.0000000000000004 &	?	\\
 	Noisy OR ENC2	&	1.0		&		?		\\
 \end{tabular}
-\caption{WMC for \texttt{PySDD} and \texttt{Cachet} using \texttt{ENC1} and \texttt{ENC2}}
+\caption{WMC for \textit{PySDD} and \textit{Cachet} using \texttt{ENC1} and \texttt{ENC2}}
 \label{tab:wmc_pysdd_cachet}
 \end{table}
 
-For \texttt{PySDD} we execute the following:
+For \textit{PySDD} and \textit{Cachet}, we executed the following commands respectively:
 \begin{itemize}
-	\item[] \texttt{\$ python3 pysdd-cli.py -c enc1.cnf}
-	\item[] \texttt{\$ python3 pysdd-cli.py -c enc2.cnf}
+	\item[] \texttt{\$ python3 pysdd-cli.py -c [enc1|enc2]\_[full|noisy]\_pysdd.cnf}
+	\item[] \texttt{\$ ./cachet [enc1|enc2]\_[full|noisy]\_cachet.cnf}
 \end{itemize}
 
-For \texttt{Cachet} we execute the following:
-\begin{itemize}
-	\item[] \texttt{\$ ./cachet enc1.cnf}
-	\item[] \texttt{\$ ./cachet enc2.cnf}
-\end{itemize}
+\newpage
 
 \subsubsection{What is the smallest circuit for each model you found and using which hyperparameters?}
 ``An SDD normalized for a vtree $v$ is a Boolean circuit defined as follows. If $v$ is a leaf node labeled with variable $X$, then the SDD is either $X$, $\neg X$, $\bot$ or an or-gate with inputs $X$ and $\neg X$ [\dots]''\cite{shen}.\\
@@ -146,6 +141,7 @@ Without changing the default hyperparameters, we get the following smallest circ
 \newpage
 
 \section{Appendix}
+\label{appendix}
 \subsubsection*{Full CPTs with ENC1}
 \paragraph{Variables}\mbox{}\\
 \input{../out/enc1_full_enc.tex}
