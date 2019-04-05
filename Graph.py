@@ -93,7 +93,7 @@ class NoisyGraph:
         for prob in self.probabilities:
             if prob.parameter_variable == parameter:
                 return prob.probability
-        return 1
+        return 0.5
 
     # def get_probability(self, parameter):
     #     #for prob in self.probabilities:
