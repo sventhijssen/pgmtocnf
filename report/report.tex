@@ -10,6 +10,9 @@
 \begin{document}
 
 \maketitle
+\tableofcontents
+
+\newpage
 
 \section{Probabilistic Inference Using Weighted Model Counting}
 
@@ -23,8 +26,18 @@ The Bayesian network with full CPTs can be rewritten as noisy-ORs. We therefore 
 \end{itemize}
 
 We can observe that if all diseases are False, the occurrence of a symptom is not $0$ but rather $0.1$ for each of the symptoms. We therefore introduce a leaky node with a probability $l = P(P(Y \mid \bar{X_i}, \forall i = 1..n)$.
-Using this leaky probability, we can compute the leaky noise OR as follows:
+Using this leaky probability, we can compute the leaky noisy OR as follows:
 $$P(Y \mid X_i) = 1-(1-l) \times \prod_{X_i \in X_T}\frac{1-p_i}{1-l}$$\\
+and
+$$P(\bar{Y} \mid X_i) = (1-l) \times \prod_{X_i \in X_T}\frac{1-p_i}{1-l}$$\\
+
+For the Bayesian network, we obtain the probabilities given in Table \ref{tab:leakynoisyor}. We also know the following:
+$P(X_I) = 0.05$, 
+$P(\bar{X_I}) = 1 - 0.05 = 0.95$, 
+$P(X_O) = 0.01$, 
+$P(\bar{X_O}) = 1 - 0.01 = 0.99$, 
+$P(X_R) = 0.0001$, 
+$P(\bar{X_R}) = 1 - 0.0001 = 0.9999$.\footnote{We indicate both diseases and symptoms by their first letter.}
 
 \begin{table}[h]
 \centering
@@ -38,38 +51,18 @@ $$P(Y \mid X_i) = 1-(1-l) \times \prod_{X_i \in X_T}\frac{1-p_i}{1-l}$$\\
 	T		&	F		&	F		&	T		&	0.64			&	0.19			&	0.2350\\
 	\hline
 \end{tabular}
-\caption{Leaky noisy OR}
+\caption{Leaky noisy-OR}
+\label{tab:leakynoisyor}
 \end{table}
 
-For the first part of the assignment, we have written a script which computes both encoding 1 and 2, based on a given probabilistic graphical model. The source code can be found here:
+For the first part of the assignment, we have written a script which computes both \texttt{ENC1} and \texttt{ENC2}, based on a given probabilistic graphical model. We created a graph structure which represented the conditional probability table of the Bayesian network. For the noisy-OR, we adapted our code with minimal changes: we created a new type of graph (\texttt{NoisyGraph}) with a leaky probability value.
 
-\subsubsection{Full CPTs with ENC1}
-\paragraph{Variables}\mbox{}\\
-\input{../out/enc1_full_enc.tex}
-\paragraph{Weights}\mbox{}\\
-\input{../out/enc1_full_weights.tex}
+See \textbf{Appendix} for the CNF and associated weights.
 
-\subsubsection{Noisy-ORs with ENC1}
-\paragraph{Variables}\mbox{}\\
-\input{../out/enc1_noisy_enc.tex}
-\paragraph{Weights}\mbox{}\\
-\input{../out/enc1_noisy_weights.tex}
-
-\subsubsection{Full CPTs with ENC2}
-\paragraph{Variables}\mbox{}\\
-\input{../out/enc2_full_enc.tex}
-\paragraph{Weights}\mbox{}\\
-\input{../out/enc2_full_weights.tex}
-
-\subsubsection{Noisy-ORs with ENC2}
-\paragraph{Variables}\mbox{}\\
-\input{../out/enc2_noisy_enc.tex}
-\paragraph{Weights}\mbox{}\\
-\input{../out/enc2_noisy_weights.tex}
-
-
+\newpage
+ 
 \subsection{SRL to CNF}
-\subsubsection{Write the encoding for the ProbLog program as CNF and associatedweights.}
+\subsubsection{Write the encoding for the ProbLog program as CNF and associated weights.}
 For this task we followed the approach of \cite{Fierens} which is split into three steps. Ground the program so that it only contains the necessary part needed for the given evidence and query. Convert the following ground rules to a CNF and finally defining a weight function for all atoms.
 
 A probabilistic rule can always be rewritten to a deterministic rule and a probabilistic fact. "p :: f :- g." becomes "p :: f\_fact. f :- g, f\_fact."
@@ -82,16 +75,19 @@ All atoms and rules are ground according to the dependancy set of the evidence E
 \textbf{The ground problog program:}
 \\
 \lstinputlisting{problogground.txt}
+
+\newpage
+
 \subsection{Weighted Model Counting}
 
 \subsubsection{Use the SDD package and one other exact weighted model counter, and apply them to the CNFs of the previous tasks. Compute and report the WMC. Can you interpret them as probabilities?}
-In Table \ref{wmc_pysdd_cachet}, we observe that the weighted model count for the different encodings using both (Py)SDD and Cachet holds a value of approximately $1$. This is what we would expect: the weighted model count of the theory $\Delta$ is equivalent with summing all probabilities in the joint distribution.
+In Table \ref{tab:wmc_pysdd_cachet}, we observe that the weighted model count for the different encodings using both \texttt{PySDD} and \texttt{Cachet} holds a value of approximately $1$. This is what we would expect: the weighted model count of the theory $\Delta$ is equivalent with summing all probabilities in the joint distribution.
 $$WMC(\Delta) = \sum_{\omega \models \Delta} W(\omega)$$
 where
 $$W(\omega) = \prod_{\omega \models l}W(l)$$
-with $W(\omega)$ the weight assigned to each literal $l$.\cite{chavira}
+with $W(\omega)$ the weight assigned to each literal $l$.\cite{chavira}\\
 
-We obtain the following table for both PySDD and Cachet\footnote{Note that by adding weights in the CNF file, we were unable to find the weighted model count. This is most likely caused by an encoding error. However, if we leave the weights out, we obtain correct results for the model count.}
+We obtain the following table (Table \ref{tab:wmc_pysdd_cachet}) for both \texttt{PySDD} and \texttt{Cachet}\footnote{Note that by adding weights in the CNF file, we were unable to find the weighted model count. This is most likely caused by an encoding error. However, if we leave the weights out, we obtain correct results for the model count.}
 \begin{table}[h]
 \centering
 \begin{tabular}{l | l l}
@@ -101,30 +97,17 @@ We obtain the following table for both PySDD and Cachet\footnote{Note that by ad
 	Full CPT ENC2	&	1.0000000000000004 &	?	\\
 	Noisy OR ENC2	&	1.0		&		?		\\
 \end{tabular}
-\caption{WMC for (Py)SDD and Cachet using ENC1 and ENC2}
-\label{wmc_pysdd_cachet}
+\caption{WMC for \texttt{PySDD} and \texttt{Cachet} using \texttt{ENC1} and \texttt{ENC2}}
+\label{tab:wmc_pysdd_cachet}
 \end{table}
 
-\begin{table}[h]
-\centering
-\begin{tabular}{l | l l}
-					&	PySDD	&		Cachet	\\\hline
-	Full CPT ENC1	&	1.0		&		?		\\
-	Noisy OR ENC1	&	1.0		&		?		\\
-	Full CPT ENC2	&	1.0000000000000004 &	?	\\
-	Noisy OR ENC2	&	1.0		&		?		\\
-\end{tabular}
-\caption{Model count for (Py)SDD and Cachet using ENC1 and ENC2}
-\label{mc_pysdd_cachet}
-\end{table}
-
-For (Py)SDD we execute the following:
+For \texttt{PySDD} we execute the following:
 \begin{itemize}
 	\item[] \texttt{\$ python3 pysdd-cli.py -c enc1.cnf}
 	\item[] \texttt{\$ python3 pysdd-cli.py -c enc2.cnf}
 \end{itemize}
 
-For Cachet we execute the following:
+For \texttt{Cachet} we execute the following:
 \begin{itemize}
 	\item[] \texttt{\$ ./cachet enc1.cnf}
 	\item[] \texttt{\$ ./cachet enc2.cnf}
@@ -152,8 +135,49 @@ Without changing the default hyperparameters, we get the following smallest circ
 \subsubsection{Explain briefly the main theoretical differences between the two weighted model counters.}
 
 
+\section{Lifted Inference}
+\section{Parameter Learning}
+
+\newpage
 
 \bibliography{references}
 \bibliographystyle{ieeetr}
+
+\newpage
+
+\section{Appendix}
+\subsubsection*{Full CPTs with ENC1}
+\paragraph{Variables}\mbox{}\\
+\input{../out/enc1_full_enc.tex}
+\newpage
+\paragraph{Weights}\mbox{}\\
+\input{../out/enc1_full_weights.tex}
+
+\newpage
+
+\subsubsection*{Noisy-ORs with ENC1}
+\paragraph{Variables}\mbox{}\\
+\input{../out/enc1_noisy_enc.tex}
+\newpage
+\paragraph{Weights}\mbox{}\\
+\input{../out/enc1_noisy_weights.tex}
+
+\newpage
+
+\subsubsection*{Full CPTs with ENC2}
+\paragraph{Variables}\mbox{}\\
+\input{../out/enc2_full_enc.tex}
+\newpage
+\paragraph{Weights}\mbox{}\\
+\input{../out/enc2_full_weights.tex}
+
+\newpage
+
+\subsubsection*{Noisy-ORs with ENC2}
+\paragraph{Variables}\mbox{}\\
+\input{../out/enc2_noisy_enc.tex}
+\newpage
+\paragraph{Weights}\mbox{}\\
+\input{../out/enc2_noisy_weights.tex}
 
 \end{document}
