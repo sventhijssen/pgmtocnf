@@ -24,6 +24,10 @@ class Encoding1:
         out += "\n".join(map(str, self.get_parameter_clauses()))
         return out
 
+    @staticmethod
+    def get_enc_name():
+        return "enc1"
+
     def get_cnf(self):
         full_cnf = []
         indicator_clauses = self.get_indicator_clauses()
@@ -126,8 +130,7 @@ class Encoding1:
 
     def export_to_dimacs(self, filename, cnf='dimacs'):
         dimacs_enc = self.get_dimacs_map()
-
-        file = open(filename + '_' + cnf, "w")
+        file = open(filename + '_' + cnf + '.cnf', "w+")
         file.write("c ENC1\n")
         file.write("p cnf " + str(len(self.get_all_variables())) + " " + str(len(self.get_cnf())) + "\n")
         if cnf == 'pysdd':
@@ -157,16 +160,15 @@ class Encoding1:
             # except weight -1 which means weight(x)=weight(-x)=1, corresponding to an
             # internal node in Bayesian Networks. By default, every variable weight
             # is set to 0.5, if its value not given in CNF.
-            print("CACHET")
             for key in dimacs_enc.keys():  # we assume the dimacs encoding is sorted from 1..N
-                print(key)
-                print(dimacs_enc[key])
+                #print(key)
+                #print(dimacs_enc[key])
                 if type(key) == IndicatorVariable: # both positive and negative close to 1
                     file.write("w\t" + str(dimacs_enc[key]) + "\t-1\n")
-                    print(-1)
+                    #print(-1)
                 else:
                     file.write("w\t" + str(dimacs_enc[key]) + "\t" + str(self.get_positive_weight(key)) + "\n")
-                    print(self.get_positive_weight(key))
+                    #print(self.get_positive_weight(key))
                 # file.write("w\t" + str(dimacs_enc[key]) + "\t" + str(self.get_positive_weight(key)) + "\n")
 
         for disjunction in self.get_cnf():
@@ -196,7 +198,7 @@ class Encoding1:
         return set(weights)
 
     def export_enc_to_latex(self, filename):
-        file = open(filename, "w")
+        file = open(filename + '_enc.tex', "w+")
         for clause in self.get_cnf():
             file.write('$')
             for i in range(len(clause.literals)):
@@ -211,7 +213,7 @@ class Encoding1:
         file.close()
 
     def export_weights_to_latex(self, filename):
-        file = open(filename, "w")
+        file = open(filename + '_weights.tex', "w+")
         for weight in self.get_weights():
             file.write('$')
             m = re.match(r"([A-Za-z]+)_([A-Za-z0-9]+(?:\|[A-Za-z0-9,]+)*)", str(weight.literal.atom))
@@ -240,6 +242,10 @@ class Encoding2:
         out += "-----------------\n"
         out += "\n".join(map(str, self.get_parameter_clauses()))
         return out
+
+    @staticmethod
+    def get_enc_name():
+        return "enc2"
 
     def get_cnf(self):
         full_cnf = []
@@ -342,31 +348,64 @@ class Encoding2:
         numbers = [i + 1 for i in range(len(variables))]
         return dict(zip(variables, numbers))
 
-    def export_to_dimacs(self, filename):
+    def get_positive_weight(self, key):
+        for w in self.get_weights():
+            if w.literal.atom == key and w.literal.positive:
+                return w.probability
+
+    def get_negative_weight(self, key):
+        for w in self.get_weights():
+            if w.literal.atom == key and not w.literal.positive:
+                return w.probability
+
+    def get_weight(self, key):
+        for w in self.get_weights():
+            if w.literal.atom == key:
+                return w.probability
+
+    def export_to_dimacs(self, filename, cnf='dimacs'):
         dimacs_enc = self.get_dimacs_map()
 
-        file = open(filename, "w")
+        file = open(filename + '_' + cnf + '.cnf', "w+")
         file.write("c ENC2\n")
-        file.write("c weights ")
-        positive_weights = []
-        negative_weights = []
-        for key in dimacs_enc.keys():  # we assume the dimacs encoding is sorted from 1..N
-            for w in self.get_weights():
-                if w.literal.atom == key:
-                    if w.literal.positive:
-                        positive_weights.append(w.probability)
-                    else:
-                        negative_weights.append(w.probability)
+        file.write("p cnf " + str(len(self.get_all_variables())) + " " + str(len(self.get_cnf())) + "\n")
+        if cnf == 'pysdd':
+            file.write("c weights ")
+            positive_weights = []
+            negative_weights = []
+            for key in dimacs_enc.keys():  # we assume the dimacs encoding is sorted from 1..N
+                for w in self.get_weights():
+                    if w.literal.atom == key:
+                        if w.literal.positive:
+                            positive_weights.append(w.probability)
+                        else:
+                            negative_weights.append(w.probability)
 
-        for i in range(len(positive_weights)):
-            file.write(str(positive_weights[i]))
-            file.write(" ")
-            file.write(str(negative_weights[i]))
-            if i < len(positive_weights)-1:
+            for i in range(len(positive_weights)):
+                file.write(str(positive_weights[i]))
                 file.write(" ")
-            else:
-                file.write("\n")
-        file.write("p cnf " + str(len(positive_weights)) + " " + str(len(self.get_cnf())) + "\n")
+                file.write(str(negative_weights[i]))
+                if i < len(positive_weights)-1:
+                    file.write(" ")
+                else:
+                    file.write("\n")
+        elif cnf == 'cachet':
+            # Cachet documentation:
+            # A normal variable weight is in [0,1], specified by line starting with 'w'
+            # var index, and weight. It is assumed weight(x)+weight(-x)=1,
+            # except weight -1 which means weight(x)=weight(-x)=1, corresponding to an
+            # internal node in Bayesian Networks. By default, every variable weight
+            # is set to 0.5, if its value not given in CNF.
+            for key in dimacs_enc.keys():  # we assume the dimacs encoding is sorted from 1..N
+                #print(key)
+                #print(dimacs_enc[key])
+                if type(key) == IndicatorVariable: # both positive and negative close to 1
+                    file.write("w\t" + str(dimacs_enc[key]) + "\t-1\n")
+                    #print(-1)
+                else:
+                    file.write("w\t" + str(dimacs_enc[key]) + "\t" + str(self.get_positive_weight(key)) + "\n")
+                    #print(self.get_positive_weight(key))
+                # file.write("w\t" + str(dimacs_enc[key]) + "\t" + str(self.get_positive_weight(key)) + "\n")
 
         for disjunction in self.get_cnf():
             for literal in disjunction.literals:
@@ -414,7 +453,7 @@ class Encoding2:
         return set(weights)
 
     def export_enc_to_latex(self, filename):
-        file = open(filename, "w")
+        file = open(filename + '_enc.tex', "w+")
         for clause in self.get_cnf():
             file.write('$')
             for i in range(len(clause.literals)):
@@ -429,7 +468,7 @@ class Encoding2:
         file.close()
 
     def export_weights_to_latex(self, filename):
-        file = open(filename, "w")
+        file = open(filename + '_weights.tex', "w+")
         for weight in self.get_weights():
             file.write('$')
             v = str(weight.literal.atom)

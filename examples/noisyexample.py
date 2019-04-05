@@ -20,7 +20,7 @@ w6 = Probability((c, 1), 0.3, [(a, 2)])
 w4 = Probability((c, 1), 0.1, [(b, 1)])
 w8 = Probability((c, 1), 0.2, [(b, 2)])
 
-graph = NoisyGraph([a, b, c], [e1, e2], [w1, w2, w3, w4])
+graph = NoisyGraph([a, b, c], [e1, e2], [w1, w2, w3, w4], 0)
 
 if __name__ == '__main__':
     main(graph)

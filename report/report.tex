@@ -1,6 +1,7 @@
 \documentclass{article}
 \usepackage[utf8]{inputenc}
 \usepackage{listings}
+\usepackage{titlesec}
 
 \title{Probabilistic Programming}
 \author{Gillis Hermans, Sven Thijssen}
@@ -10,7 +11,9 @@
 
 \maketitle
 
-\section{PGM to CNF}
+\section{Probabilistic Inference Using Weighted Model Counting}
+
+\subsection{PGM to CNF}
 
 The Bayesian network with full CPTs can be rewritten as noisy-ORs. We therefore assume the following \cite{noisyor}:
 \begin{itemize}
@@ -39,21 +42,36 @@ $$P(Y \mid X_i) = 1-(1-l) \times \prod_{X_i \in X_T}\frac{1-p_i}{1-l}$$\\
 \end{table}
 
 For the first part of the assignment, we have written a script which computes both encoding 1 and 2, based on a given probabilistic graphical model. The source code can be found here:
-\subsection{Full CPTs with ENC1}
-\subsubsection{Variables}
-\input{../out/enc1_enc.tex}
-\subsubsection{Weights}
-\input{../out/enc1_weights.tex}
-\subsubsection{Variables}
-\subsubsection{Weights}
-\subsection{Noisy-ORs with ENC1}
-\subsection{Full CPTs with ENC2}
-\subsection{Noisy-ORs with ENC2}
-\section{SRL to CNF}
-\subsection{Write the encoding for the ProbLog program as CNF and associatedweights.}
+
+\subsubsection{Full CPTs with ENC1}
+\paragraph{Variables}\mbox{}\\
+\input{../out/enc1_full_enc.tex}
+\paragraph{Weights}\mbox{}\\
+\input{../out/enc1_full_weights.tex}
+
+\subsubsection{Noisy-ORs with ENC1}
+\paragraph{Variables}\mbox{}\\
+\input{../out/enc1_noisy_enc.tex}
+\paragraph{Weights}\mbox{}\\
+\input{../out/enc1_noisy_weights.tex}
+
+\subsubsection{Full CPTs with ENC2}
+\paragraph{Variables}\mbox{}\\
+\input{../out/enc2_full_enc.tex}
+\paragraph{Weights}\mbox{}\\
+\input{../out/enc2_full_weights.tex}
+
+\subsubsection{Noisy-ORs with ENC2}
+\paragraph{Variables}\mbox{}\\
+\input{../out/enc2_noisy_enc.tex}
+\paragraph{Weights}\mbox{}\\
+\input{../out/enc2_noisy_weights.tex}
+
+
+\subsection{SRL to CNF}
+\subsubsection{Write the encoding for the ProbLog program as CNF and associatedweights.}
 For this task we followed the approach of \cite{Fierens} which is split into three steps. Ground the program so that it only contains the necessary part needed for the given evidence and query. Convert the following ground rules to a CNF and finally defining a weight function for all atoms.
 
-\subsubsection{Grounding}
 A probabilistic rule can always be rewritten to a deterministic rule and a probabilistic fact. "p :: f :- g." becomes "p :: f\_fact. f :- g, f\_fact."
 
 All atoms and rules are ground according to the dependancy set of the evidence E and the query Q. However not all ground rules are active.
@@ -64,9 +82,75 @@ All atoms and rules are ground according to the dependancy set of the evidence E
 \textbf{The ground problog program:}
 \\
 \lstinputlisting{problogground.txt}
+\subsection{Weighted Model Counting}
 
-\subsubsection{CNF}
-\subsubsection{Weights}
+\subsubsection{Use the SDD package and one other exact weighted model counter, and apply them to the CNFs of the previous tasks. Compute and report the WMC. Can you interpret them as probabilities?}
+In Table \ref{wmc_pysdd_cachet}, we observe that the weighted model count for the different encodings using both (Py)SDD and Cachet holds a value of approximately $1$. This is what we would expect: the weighted model count of the theory $\Delta$ is equivalent with summing all probabilities in the joint distribution.
+$$WMC(\Delta) = \sum_{\omega \models \Delta} W(\omega)$$
+where
+$$W(\omega) = \prod_{\omega \models l}W(l)$$
+with $W(\omega)$ the weight assigned to each literal $l$.\cite{chavira}
+
+We obtain the following table for both PySDD and Cachet\footnote{Note that by adding weights in the CNF file, we were unable to find the weighted model count. This is most likely caused by an encoding error. However, if we leave the weights out, we obtain correct results for the model count.}
+\begin{table}[h]
+\centering
+\begin{tabular}{l | l l}
+					&	PySDD	&		Cachet	\\\hline
+	Full CPT ENC1	&	1.0		&		?		\\
+	Noisy OR ENC1	&	1.0		&		?		\\
+	Full CPT ENC2	&	1.0000000000000004 &	?	\\
+	Noisy OR ENC2	&	1.0		&		?		\\
+\end{tabular}
+\caption{WMC for (Py)SDD and Cachet using ENC1 and ENC2}
+\label{wmc_pysdd_cachet}
+\end{table}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{l | l l}
+					&	PySDD	&		Cachet	\\\hline
+	Full CPT ENC1	&	1.0		&		?		\\
+	Noisy OR ENC1	&	1.0		&		?		\\
+	Full CPT ENC2	&	1.0000000000000004 &	?	\\
+	Noisy OR ENC2	&	1.0		&		?		\\
+\end{tabular}
+\caption{Model count for (Py)SDD and Cachet using ENC1 and ENC2}
+\label{mc_pysdd_cachet}
+\end{table}
+
+For (Py)SDD we execute the following:
+\begin{itemize}
+	\item[] \texttt{\$ python3 pysdd-cli.py -c enc1.cnf}
+	\item[] \texttt{\$ python3 pysdd-cli.py -c enc2.cnf}
+\end{itemize}
+
+For Cachet we execute the following:
+\begin{itemize}
+	\item[] \texttt{\$ ./cachet enc1.cnf}
+	\item[] \texttt{\$ ./cachet enc2.cnf}
+\end{itemize}
+
+\subsubsection{What is the smallest circuit for each model you found and using which hyperparameters?}
+``An SDD normalized for a vtree $v$ is a Boolean circuit defined as follows. If $v$ is a leaf node labeled with variable $X$, then the SDD is either $X$, $\neg X$, $\bot$ or an or-gate with inputs $X$ and $\neg X$ [\dots]''\cite{shen}.\\
+From the output, we get the SDD size, which is the size of the smallest circuit since the model is already minimized.
+Without changing the default hyperparameters, we get the following smallest circuits:
+\begin{table}
+\centering
+\begin{tabular}{l | l}
+					&	\\\hline
+	Full CPT ENC1	&		\\
+	Noisy OR ENC1	&		\\
+	Full CPT ENC2	&		\\
+	Noisy OR ENC2	&		\\
+\end{tabular}
+\caption{Hyperparameter \texttt{-m}}
+\end{table}
+
+\subsubsection{Create an overview of the computational requirements of the compilation (e.g. runtime, memory)}
+
+\subsubsection{Use WMC to compute the probabilities }
+\subsubsection{Explain briefly the main theoretical differences between the two weighted model counters.}
+
 
 
 \bibliography{references}

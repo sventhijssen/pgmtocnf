@@ -1,0 +1,21 @@
+\begin{thebibliography}{1}
+
+\bibitem{noisyor}
+R.~Blutner, ``Noisy ors.'' Slides, 2012-2013.
+
+\bibitem{Fierens}
+D.~Fierens, G.~V. den Broeck, I.~Thon, B.~Gutmann, and L.~D. Raedt, ``Inference
+  in probabilistic logic programs using weighted cnf's,'' {\em CoRR},
+  vol.~abs/1202.3719, 2012.
+
+\bibitem{chavira}
+M.~Chavira and A.~Darwiche, ``On probabilistic inference by weighted model
+  counting,'' {\em Artificial Intelligence}, vol.~172, no.~6-7, pp.~772--799,
+  2008.
+
+\bibitem{shen}
+Y.~Shen, A.~Choi, and A.~Darwiche, ``Tractable operations for arithmetic
+  circuits of probabilistic models,'' in {\em Advances in Neural Information
+  Processing Systems}, pp.~3936--3944, 2016.
+
+\end{thebibliography}
