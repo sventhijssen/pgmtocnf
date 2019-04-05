@@ -3,6 +3,7 @@ __pycache__
 out/*
 *.aux
 *.log
+*.out
 *.pdf
 *.synctex.gz
 *.toc
