@@ -66,7 +66,7 @@ For the first part of the assignment, we have written a program\footnote{Source 
 \subsubsection{CNF and associated weights}
 \underline{\textbf{Write the encoding for the ProbLog program as CNF and associated weights.}}
 \\
-For this task we followed the approach of \cite{Fierens} which is split into three steps. Ground the program so that it only contains the necessary part needed for the given evidence and query. Convert the following ground rules to CNF and finally define a weight function for all atoms. \footnote{Source code on GitHub: \href{https://github.com/gillishermans/probabilisticprogramming_part1.2-3}{https://github.com/gillishermans/probabilisticprogramming_part1.2-3}}
+For this task we followed the approach of \cite{Fierens} which is split into three steps. Ground the program so that it only contains the necessary part needed for the given evidence and query. Convert the following ground rules to CNF and finally define a weight function for all atoms. \footnote{Source code on GitHub: \href{https://github.com/gillishermans/probabilisticprogramming_part1.2-3}{https://github.com/gillishermans/probabilisticprogramming\_part1.2-3}}
 \\\\
 \underline{\textbf{Grounding}}
 \\
@@ -161,7 +161,7 @@ For the different encodings, we vary the initial vtree type (flag \texttt{-t}) a
 
 We observe that the circuit size is overall smaller for balanced vtrees and overall greater for random vtrees. Circuit sizes for left and right  vtrees usually lie between these circuit values. Vertical vtrees seem to be prone to outliers.
 
-For this task, we executed the following command:
+For this task, we executed the following command\footnote{Source code on GitHub: \href{https://github.com/sventhijssen/pysdd}{https://github.com/sventhijssen/pysdd}}
 \begin{itemize}
 	\item[] \texttt{\$ python3 hyperparam-cli.py}
 \end{itemize}
@@ -184,7 +184,7 @@ To create an overview of the runtime and memory usage of the python process, we 
 \label{tab:memory_runtime}
 \end{table}
 
-For this task, we executed the following command:
+For this task, we executed the following command\footnote{Source code on GitHub: \href{https://github.com/sventhijssen/pysdd}{https://github.com/sventhijssen/pysdd}}:
 \begin{itemize}
 	\item[] \texttt{\$ python3 compreq-cli.py}
 \end{itemize}
@@ -237,7 +237,7 @@ We have generated the 4 following interpretations while dropping observations wi
     \item\{osteoprosis: True, bispho: False initialOsteoprosis: True\}
 \end{itemize}
 \subsection{Estimate parameters}
-In order to estimate the parameters $p_{n}$ for every fact in the problog program we query each of those facts for a number of interpretations $m$ \footnote{Source code on GitHub: \href{https://github.com/gillishermans/probabilisticprogramming_part1.2-3}{https://github.com/gillishermans/probabilisticprogramming_part1.2-3}}. These interpretations are generated as in the previous section.\\\\
+In order to estimate the parameters $p_{n}$ for every fact in the problog program we query each of those facts for a number of interpretations $m$ \footnote{Source code on GitHub: \href{https://github.com/gillishermans/probabilisticprogramming_part1.2-3}{https://github.com/gillishermans/probabilisticprogramming\_part1.2-3}}. These interpretations are generated as in the previous section.\\\\
 For every interpretation we start from the model problog program without evidence and add the observations in the interpretation as evidence. However any observations about the current fact are removed from the evidence. Otherwise the evaluation would give either 0.0 (if there was an observation that the fact was false) or 1.0(true). This would skew the estimated parameter. Next we add the fact as a query and evaluate with problog. These evaluations are summed and divided by the number of interpretations $m$. This is the new learned parameter $p_{n}$:
 \begin{center}
     $p_{n} = \frac{1}{M} \sum_{m=1}^M P(f_{n}|I_{m}) $\\
