@@ -64,18 +64,40 @@ For the first part of the assignment, we have written a program\footnote{Source 
  
 \subsection{SRL to CNF}
 \subsubsection{Write the encoding for the ProbLog program as CNF and associated weights.}
-For this task we followed the approach of \cite{Fierens} which is split into three steps. Ground the program so that it only contains the necessary part needed for the given evidence and query. Convert the following ground rules to a CNF and finally defining a weight function for all atoms.
-
-A probabilistic rule can always be rewritten to a deterministic rule and a probabilistic fact. "p :: f :- g." becomes "p :: f\_fact. f :- g, f\_fact."
-
-All atoms and rules are ground according to the dependancy set of the evidence E and the query Q. However not all ground rules are active.
+\underline{\textbf{Write the encoding for the ProbLog program as CNF and associated weights.}}
+\\
+For this task we followed the approach of \cite{Fierens} which is split into three steps. Ground the program so that it only contains the necessary part needed for the given evidence and query. Convert the following ground rules to CNF and finally define a weight function for all atoms. We achieved this by using the Problog library for python at %TODO een ref naar het programma
+\\\\
+\underline{\textbf{Grounding}}
+\\
+If there are positive and negative rules of f these are changed into a $f\_p$ and a $f\_n$ which are then combined to $f :- f\_p,  \neg f\_n.$. All atoms and rules are ground according to the dependancy set of the evidence E and the query Q. Rules that have no relevance to the evidence and query will be removed from the program. 
 \\\\
 \textbf{The inititial problog program:}
 \\
-\lstinputlisting{problog1.txt}
+\input{problog1.tex}
+\\
 \textbf{The ground problog program:}
 \\
-\lstinputlisting{problogground.txt}
+\input{problogground.tex}
+\underline{\textbf{CNF}}
+\\
+Next the ground program is converted into a CNF. Cyclical rules are ignored as they are removed from the grounded program before converting into CNF form (even though there are no cyclical rules in this specific example). The Clark's completion of the rules is made to transform the problog rules into first-order logic. This can then simply be rewritten to a CNF form found in de dimacs file provided.
+\\\\
+\textbf{The clark's completion:}
+\\
+\input{problogclark.tex}
+\\\\
+\underline{\textbf{Weights}}
+\\
+Finally the weights of each probabilistic fact $p::f$ will be assigned $p$ as a weight and $\neg f$ will be assigned $1-p$. Literals not occuring in a probabilistic fact will get weight 1. The probabilistic rules are first rewritten to both a deterministic rule and a probabilistic fact to facilitate assigning the probabilistic facts a weight. $p :: f :- g.$ becomes $p :: f\_fact.$ $f :- g, f\_fact.$
+\\\\
+\textbf{The ground problog program rewritten:}
+\\
+\input{probloggroundrewritten.tex}
+\\\\
+\textbf{The weights (not occuring in this list have weight 1):}
+\\
+\input{problogweights.tex}
 
 \newpage
 
@@ -188,7 +210,85 @@ To obtain these results, we have chosen to use the first approach. We have adapt
 \end{figure}
 
 \section{Lifted Inference}
+\subsection{Lifted inference rules}
+In order to compute $P(sorejoints|infection=T,osteo=T,rheuma=T)$ we use the lifted inference rules to transform this query. First of all the query is transformed into a FOL statement:
+\begin{center}
+    $Q = \exists$ x i(x) $\land$ o(x) $\land$ r(x) $\land$ sj(x)
+\end{center}
+To compute $P(Q)$ the following lifted inference steps are taken:
+\begin{center}
+    $\exists$-rule: $P(Q) = 1 - \prod_{c \in Domain} (1-P(i(C)\land o(C) \land r(C) \land sj(C))) $\\
+    $\land$-rule: $P(Q) = 1 - \prod_{c \in Domain} (1-P(i(C))P(o(C))P(r(C))P(sj(C)))) $\\
+\end{center}
+The obtained probabilities can simply be looked up in the probabilistic database.
+
+\subsection{Alternative encodings}
+We have not found a solution to this task.
+
+
 \section{Parameter Learning}
+\subsection{Generate interpretations}
+We have generated the 4 following interpretations while dropping observations with probability 30\% using the problog sample function:
+\begin{itemize}
+    \item\{osteoprosis: True, calcium: True, bispho: False\}
+    \item\{osteoprosis: False, calcium: False\}
+    \item\{osteoprosis: False, bispho: False, initialOsteoprosis: False\}
+    \item\{osteoprosis: True, bispho: False initialOsteoprosis: True\}
+\end{itemize}
+\subsection{Estimate parameters}
+In order to estimate the parameters $p_{n}$ for every fact in the problog program we query each of those facts for a number of interpretations $m$. These interpretations are generated as in the previous section.\\\\
+For every interpretation we start from the model problog program without evidence and add the observations in the interpretation as evidence. However any observations about the current fact are removed from the evidence. Otherwise the evaluation would give either 0.0 (if there was an observation that the fact was false) or 1.0(true). This would skew the estimated parameter. Next we add the fact as a query and evaluate with problog. These evaluations are summed and divided by the number of interpretations $m$. This is the new learned parameter $p_{n}$:
+\begin{center}
+    $p_{n} = \frac{1}{M} \sum_{m=1}^M P(f_{n}|I_{m}) $\\
+    where $I_{m}$ is the $m$'th interpretation.
+\end{center}
+The learned parameters are:
+\begin{table}[h!]
+    \begin{center}
+    \begin{tabular}{|l|l|l|l|l|}
+    \hline
+                    & actual   & 100        & 1000      & 10000     \\ \hline
+    bispho              & 0.5      & 0.4905147  & 0.5027595 & 0.4993673 \\ \hline
+    calcium             & 0.5      & 0.51874435 & 0.4977120 & 0.5027093 \\ \hline
+    initialOsteoprosis  & 0.5      & 0.5504062  & 0.4933254 & 0.5020656 \\ \hline
+    osteoprosis         & 0.365625 & 0.4188750  & 0.3704031 & 0.3642547 \\ \hline
+    reduceOsteoclasts   & 0.25     & 0.1793807  & 0.2527558 & 0.2506215 \\ \hline
+    increaseOsteoblasts & 0.375    & 0.4437956  & 0.3806887 & 0.3742494          \\ \hline
+    \end{tabular}
+    \caption{The learned parameters.}
+    \label{tab:param}
+    \end{center}
+\end{table}
+\subsection{Explain observations}
+As expected bispho, calcium and initialOsteoprosis are estimated around 0.5. This is the probability given to them in the problog program itself. The rest of the estimates are accurate as well. The actual probabilities can be found by evaluating the problog program without evidence and with the fact as a query. It is also possible to manually show that for example the probability of reduceOsteoclasts is 25\%. The  following problog rules clearly define the probabilities given in table \ref{tab:reduce}.
+\begin{center}
+    $reduceOsteoclasts :- bispho.$\\
+    $1.0::\neg reduceOsteoclasts :- calcium , bispho.$\\
+    $0.5::calcium. 0.5::bispho.$
+\end{center}
+\begin{table}[h!]
+    \begin{center}
+    \begin{tabular}{|ll|l|l|}
+    \hline
+    bispho       & calcium       & $\sim$reduceOsteoclasts & 0.25 \\
+    $\sim$bispho & calcium       & $\sim$reduceOsteoclasts & 0.25 \\
+    bispho       & $\sim$calcium & reduceOsteoclasts       & 0.25 \\
+    $\sim$bispho & $\sim$calcium & $\sim$reduceOsteoclasts &     0.25 \\ \hline
+    \end{tabular}
+    \caption{ReduceOsteoclasts table.}
+    \label{tab:reduce}
+    \end{center}
+\end{table}
+
+Of course with a higher number of interpretations a more accurate estimate will be achieved as can be seen in the table of the learned paramaters. However 10000 iterations does not seem to have an advantage over 1000 iterations. The runs will take 10 times longer and are not significantly more accurate. 
+
+\subsection{Learn positive or negative influence}
+A possibility is to compare two different estimates (using the same or similar technique to the previous question). One where part of every interpretation has an observation that the investigated variable is true, and one where it is false.
+\begin{center}
+    $P(f_{n}|I_{m} \land investigated=T)$\\
+    $P(f_{n}|I_{m} \land investigated=F)$
+\end{center}
+These estimates can be compared to see if in general the investigated variable has a positive or negative effect on fact $f_{n}$.
 
 \newpage
 

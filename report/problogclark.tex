@@ -1,0 +1,16 @@
+$
+increaseOsteoblasts \leftrightarrow increaseOsteoblasts_p \land \neg increaseOsteoblasts_n\\
+increaseOsteoblasts_p \leftrightarrow calcium\\
+increaseOsteoblasts_n \leftrightarrow calcium \land bispho.\\
+reduceOsteoclasts \leftrightarrow reduceOsteoclasts_p \land \neg reduceOsteoclasts_n.\\
+reduceOsteoclasts_p \leftrightarrow bispho.\\
+reduceOsteoclasts_n \leftrightarrow calcium \land bispho.\\
+osteoprosis_p \leftrightarrow initialOsteoprosis.\\
+osteoprosis_p \leftrightarrow initialOsteoprosis.\\
+osteoprosis_n \leftrightarrow reduceOsteoclasts.\\
+osteoprosis_n \leftrightarrow increaseOsteoblasts.\\
+osteoprosis \leftrightarrow osteoprosis_p \land \neg osteoprosis_n.\\
+calcium
+\neg bispho
+initialOsteoprosis
+$
