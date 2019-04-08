@@ -95,6 +95,8 @@ w52 = Probability((s, 2), 0.9999, [(i, 2), (o, 2), (r, 2)])
 w53 = Probability((n, 1), 0.3825, [(i, 2), (o, 2), (r, 2)])
 w54 = Probability((n, 2), 0.6175, [(i, 2), (o, 2), (r, 2)])
 
+evidence = [(i, 2), (o, 2), (r, 2)]  # infection=True, osteo=True, rheuma=True
+
 graph = Graph(
     [i, o, r, t, s, n],
     [e1, e2, e3, e4, e5, e6, e7, e8, e9],
@@ -105,5 +107,5 @@ graph = Graph(
      w49, w50, w51, w52, w53, w54])
 
 if __name__ == '__main__':
-    main('standard', graph)
+    main('evidence', graph, evidence)
 

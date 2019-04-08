@@ -58,6 +58,8 @@ w19 = Probability((t, 2), 1-0.8999, [(i, 1)])
 w20 = Probability((s, 2), 1-0.8910, [(i, 1)])
 w21 = Probability((n, 2), 1-0.9, [(i, 1)])
 
+evidence = [(i, 2), (o, 2), (r, 2)]  # infection=True, osteo=True, rheuma=True
+
 graph = NoisyGraph(
     [i, o, r, t, s, n],
     [e1, e2, e3, e4, e5, e6, e7, e8, e9],
@@ -65,5 +67,5 @@ graph = NoisyGraph(
     leak_probability)
 
 if __name__ == '__main__':
-    main('standard', graph)
+    main('evidence', graph, evidence)
 

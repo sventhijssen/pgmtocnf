@@ -9,8 +9,9 @@ from Weight import Weight
 
 class Encoding1:
 
-    def __init__(self, graph):
+    def __init__(self, graph, evidence):
         self.graph = graph
+        self.evidence = evidence
 
     def __str__(self):
         out = "-----ENC1------\n"
@@ -27,6 +28,22 @@ class Encoding1:
     @staticmethod
     def get_enc_name():
         return "enc1"
+
+    def in_evidence(self, indicator_variable):
+        if self.evidence is None:
+            return False
+        for e in self.evidence:
+            if e[0] == indicator_variable.node:
+                return True
+        return False
+
+    def is_evidence(self, indicator_variable):
+        if self.evidence is None:
+            return False
+        for e in self.evidence:
+            if e[0] == indicator_variable.node and e[1] == indicator_variable.value:
+                return True
+        return False
 
     def get_cnf(self):
         full_cnf = []
@@ -141,8 +158,10 @@ class Encoding1:
                 for w in self.get_weights():
                     if w.literal.atom == key:
                         if w.literal.positive:
+                            print(str(key) + " " + str(dimacs_enc[key]) + " " + str(w.probability))
                             positive_weights.append(w.probability)
                         else:
+                            print(str(key) + " " + str(dimacs_enc[key]) + " " + str(w.probability))
                             negative_weights.append(w.probability)
 
             for i in range(len(positive_weights)):
@@ -192,9 +211,15 @@ class Encoding1:
                     weights.append(Weight(literal, 1))
             else:
                 if literal.positive:
-                    weights.append(Weight(literal, 1))
+                    if self.in_evidence(literal.atom) and not self.is_evidence(literal.atom):
+                        weights.append(Weight(literal, 0))
+                    else:
+                        weights.append(Weight(literal, 1))
                 else:
-                    weights.append(Weight(literal, 1))
+                    if self.in_evidence(literal.atom) and not self.is_evidence(literal.atom):
+                        weights.append(Weight(literal, 0))
+                    else:
+                        weights.append(Weight(literal, 1))
         return set(weights)
 
     def export_enc_to_latex(self, filename):
@@ -228,8 +253,9 @@ class Encoding1:
 
 class Encoding2:
 
-    def __init__(self, graph):
+    def __init__(self, graph, evidence):
         self.graph = graph
+        self.evidence = evidence
 
     def __str__(self):
         out = "---ENC2---\n"
@@ -246,6 +272,22 @@ class Encoding2:
     @staticmethod
     def get_enc_name():
         return "enc2"
+
+    def in_evidence(self, indicator_variable):
+        if self.evidence is None:
+            return False
+        for e in self.evidence:
+            if e[0] == indicator_variable.node:
+                return True
+        return False
+
+    def is_evidence(self, indicator_variable):
+        if self.evidence is None:
+            return False
+        for e in self.evidence:
+            if e[0] == indicator_variable.node and e[1] == indicator_variable.value:
+                return True
+        return False
 
     def get_cnf(self):
         full_cnf = []
@@ -448,8 +490,10 @@ class Encoding2:
 
         for literal in literals:
             if type(literal.atom) == IndicatorVariable:
-                weights.append(Weight(literal, 1))
-                #weights.append(Weight(literal, 1))
+                if self.in_evidence(literal.atom) and not self.is_evidence(literal.atom):
+                    weights.append(Weight(literal, 0))
+                else:
+                    weights.append(Weight(literal, 1))
         return set(weights)
 
     def export_enc_to_latex(self, filename):
