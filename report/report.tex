@@ -115,9 +115,9 @@ For \textit{Cachet} we could not obtain a probability of 1 nor any solutions whe
 \centering
 \begin{tabular}{l | l l}
 					&	PySDD	&		Cachet	\\\hline
-	Full CPT ENC1	&	1.0		&		?		\\
-	Noisy OR ENC1	&	1.0		&		?		\\
-	Full CPT ENC2	&	1.0000000000000004 &	?	\\
+	Full CPT ENC1	&	1.0000000000000002		&		?		\\
+	Noisy OR ENC1	&	0.9998172061924634		&		?		\\
+	Full CPT ENC2	&	1.0 &	?	\\
 	Noisy OR ENC2	&	1.0		&		?		\\
 \end{tabular}
 \caption{WMC for \textit{PySDD} and \textit{Cachet} using \texttt{ENC1} and \texttt{ENC2}}
@@ -160,6 +160,11 @@ For the different encodings, we vary the initial vtree type (flag \texttt{-t}) a
 \end{figure}
 
 We observe that the circuit size is overall smaller for balanced vtrees and overall greater for random vtrees. Circuit sizes for left and right  vtrees usually lie between these circuit values. Vertical vtrees seem to be prone to outliers.
+
+For this task, we executed the following command:
+\begin{itemize}
+	\item[] \texttt{\$ python3 hyperparam-cli.py}
+\end{itemize}
 
 \newpage
 
