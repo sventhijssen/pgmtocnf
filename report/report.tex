@@ -63,7 +63,7 @@ For the first part of the assignment, we have written a program\footnote{Source 
 \newpage
  
 \subsection{SRL to CNF}
-\subsubsection{Write the encoding for the ProbLog program as CNF and associated weights.}
+\subsubsection{CNF and associated weights}
 \underline{\textbf{Write the encoding for the ProbLog program as CNF and associated weights.}}
 \\
 For this task we followed the approach of \cite{Fierens} which is split into three steps. Ground the program so that it only contains the necessary part needed for the given evidence and query. Convert the following ground rules to CNF and finally define a weight function for all atoms. We achieved this by using the Problog library for python at %TODO een ref naar het programma
@@ -103,7 +103,7 @@ Finally the weights of each probabilistic fact $p::f$ will be assigned $p$ as a 
 
 \subsection{Weighted Model Counting}
 
-\subsubsection{Use the SDD package and one other exact weighted model counter, and apply them to the CNFs of the previous tasks. Compute and report the WMC. Can you interpret them as probabilities?}
+\subsubsection{Weighted model counting}
 In Table \ref{tab:wmc_pysdd_cachet}, we observe that the weighted model count for the different encodings using  \textit{PySDD} holds a value of approximately $1$. This is what we would expect: the weighted model count of the theory $\Delta$ is equivalent with summing all probabilities in the joint distribution. This WMC could be interpreted as the probability that any model is chosen, which says nothing about the model. 
 $$WMC(\Delta) = \sum_{\omega \models \Delta} W(\omega)$$
 where
@@ -132,7 +132,7 @@ For \textit{PySDD} and \textit{Cachet}, we executed the following commands respe
 
 \newpage
 
-\subsubsection{What is the smallest circuit for each model you found and using which hyperparameters?}
+\subsubsection{Smallest circuit}
 ``An SDD normalized for a vtree $v$ is a Boolean circuit defined as follows. If $v$ is a leaf node labeled with variable $X$, then the SDD is either $X$, $\neg X$, $\bot$ or an or-gate with inputs $X$ and $\neg X$ [\dots]''\cite{shen}.\\
 From the output, we get the SDD size, which is the size of the smallest circuit since the model is already minimized.
 For the different encodings, we vary the initial vtree type (flag \texttt{-t}) and the clauses for vtree search (flag \texttt{-r}).
@@ -161,7 +161,7 @@ For the different encodings, we vary the initial vtree type (flag \texttt{-t}) a
 
 We observe that the circuit size is overall smaller for balanced vtrees and overall greater for random vtrees. Circuit sizes for left, right and vertical vtrees usually lie between these circuit values. 
 
-\subsubsection{Create an overview of the computational requirements of the compilation (e.g. runtime, memory)}
+\subsubsection{Computational requirements}
 To create an overview of the runtime and memory usage of the python process, we used \textit{Pympler}. 
 
 \begin{table}[h]
@@ -190,7 +190,7 @@ To create an overview of the runtime and memory usage of the python process, we 
 \label{tab:runtime_pysdd_cachet}
 \end{table}
 
-\subsubsection{Use WMC to compute the probabilities }
+\subsubsection{Probabilities}
 To compute the probability $P(S \mid I=\top, O = \top, R = \top)$, we add evidence to the theory $\Delta$. As mentioned by Chavria and Darwiche \cite{chavira}, there are two ways to incorporate this evidence:
 \begin{enumerate}
 	\item the weight associated with each indicator $\lambda_x$, whose subscript contradicts the evidence from 1 to 0.
@@ -199,8 +199,10 @@ To compute the probability $P(S \mid I=\top, O = \top, R = \top)$, we add eviden
 
 To obtain these results, we have chosen to use the first approach. We have adapted our script which generates the \textit{PySDD} CNF file such that the $\lambda_x$ indicator variables which contradict the evidence are set to 0. However, when using this technique, we obtained results which did not match our expectations. We would expect the probability to be $99.99\%$ (see Figure \ref{fig:task_1_3_4}) but obtained a WMC of 0, which would be incorrect. We then made a script to load the \textit{PySDD} CNF file and set the weights of the literals manually. When doing this, the probabilities of the literals are $nan$.
 
-\subsubsection{Explain briefly the main theoretical differences between the two weighted model counters.}
+\subsubsection{Theoretical differences}
+A distinction is made between bottom-up compilers and top-down compilers. \textit{SDD} and thus \textit{PySDD} which builds upon \textit{SDD} is a bottom-up compiler. \textit{miniC2D} is a top-down compiler. Bottom-up compilers construct a full knowledge base by merging smaller chunks (e.g. clauses of a CNF) of a knowledge base by means of an \texttt{apply} operation.\cite{topdown} The \texttt{apply} operation either conjoins or disjoins two SDDs. \cite{bottomup} The top-down compilers starts from a full knowledge base and recursively compiles fragments and then merges them to make a compilation of a full knowledge base.\cite{topdown}\footnote{We were unable to find whether \textit{Cachet} is a top-down or bottom-up compiler. We do know \textit{Cachet} builds further upon \textit{zChaff} and uses the \textit{DPLL} algorithm. We assume it is bottom-up since it learns from clauses and iteratively builds up the knowledge base.}
 
+\newpage
 
 \begin{figure}[h]
 	\centering

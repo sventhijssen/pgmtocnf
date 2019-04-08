@@ -18,4 +18,14 @@ Y.~Shen, A.~Choi, and A.~Darwiche, ``Tractable operations for arithmetic
   circuits of probabilistic models,'' in {\em Advances in Neural Information
   Processing Systems}, pp.~3936--3944, 2016.
 
+\bibitem{topdown}
+U.~Oztok and A.~Darwiche, ``A top-down compiler for sentential decision
+  diagrams,'' in {\em Twenty-Fourth International Joint Conference on
+  Artificial Intelligence}, 2015.
+
+\bibitem{bottomup}
+A.~Choi and A.~Darwiche, ``Dynamic minimization of sentential decision
+  diagrams,'' in {\em Twenty-Seventh AAAI Conference on Artificial
+  Intelligence}, 2013.
+
 \end{thebibliography}
