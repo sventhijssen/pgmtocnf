@@ -141,25 +141,27 @@ For the different encodings, we vary the initial vtree type (flag \texttt{-t}) a
 \begin{figure}[h]
   \centering
   \begin{subfigure}[b]{0.4\linewidth}
-    \includegraphics[width=\linewidth]{images/enc1_full.png}
+    \includegraphics[width=\linewidth]{images/standard_enc1_full.png}
     \caption{Circuit size for Bayesian net as full CPT with \texttt{ENC1} for varying vtree type and number of clauses for vtree search}
   \end{subfigure}
     \begin{subfigure}[b]{0.4\linewidth}
-    \includegraphics[width=\linewidth]{images/enc1_noisy.png}
+    \includegraphics[width=\linewidth]{images/standard_enc1_noisy.png}
     \caption{Circuit size for Bayesian net as noisy-OR with \texttt{ENC1} for varying vtree type and number of clauses for vtree search}
   \end{subfigure}
   \begin{subfigure}[b]{0.4\linewidth}
-    \includegraphics[width=\linewidth]{images/enc2_full.png}
+    \includegraphics[width=\linewidth]{images/standard_enc2_full.png}
     \caption{Circuit size for Bayesian net as full CPT with \texttt{ENC2} for varying vtree type and number of clauses for vtree search}
   \end{subfigure}
     \begin{subfigure}[b]{0.4\linewidth}
-    \includegraphics[width=\linewidth]{images/enc2_noisy.png}
+    \includegraphics[width=\linewidth]{images/standard_enc2_noisy.png}
     \caption{Circuit size for Bayesian net as noisy-OR with \texttt{ENC2} for varying vtree type and number of clauses for vtree search}
   \end{subfigure}
   \label{fig:circuits}
 \end{figure}
 
-We observe that the circuit size is overall smaller for balanced vtrees and overall greater for random vtrees. Circuit sizes for left, right and vertical vtrees usually lie between these circuit values. 
+We observe that the circuit size is overall smaller for balanced vtrees and overall greater for random vtrees. Circuit sizes for left and right  vtrees usually lie between these circuit values. Vertical vtrees seem to be prone to outliers.
+
+\newpage
 
 \subsubsection{Computational requirements}
 To create an overview of the runtime and memory usage of the python process, we used \textit{Pympler}. In Table \ref{tab:memory_runtime}, we observe that the memory usage for all representations is approximately the same. The runtime, however, for \texttt{ENC2} is much lower than for \texttt{ENC1}.
