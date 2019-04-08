@@ -162,33 +162,25 @@ For the different encodings, we vary the initial vtree type (flag \texttt{-t}) a
 We observe that the circuit size is overall smaller for balanced vtrees and overall greater for random vtrees. Circuit sizes for left, right and vertical vtrees usually lie between these circuit values. 
 
 \subsubsection{Computational requirements}
-To create an overview of the runtime and memory usage of the python process, we used \textit{Pympler}. 
+To create an overview of the runtime and memory usage of the python process, we used \textit{Pympler}. In Table \ref{tab:memory_runtime}, we observe that the memory usage for all representations is approximately the same. The runtime, however, for \texttt{ENC2} is much lower than for \texttt{ENC1}.
 
 \begin{table}[h]
 \centering
 \begin{tabular}{l | l l}
-					&	PySDD	&		Cachet	\\\hline
-	Full CPT ENC1	&	1.0		&		?		\\
-	Noisy OR ENC1	&	1.0		&		?		\\
-	Full CPT ENC2	&	1.0000000000000004 &	?	\\
-	Noisy OR ENC2	&	1.0		&		?		\\
+					&	Memory (kB)	&	Runtime (s)	\\\hline
+	Full CPT ENC1	&	8542.77		&	0.45			\\
+	Noisy OR ENC1	&	8543.17		&	0.62			\\
+	Full CPT ENC2	&	8543.56		&	0.13			\\
+	Noisy OR ENC2	&	8543.98		&	0.15			\\
 \end{tabular}
-\caption{Memory usage for \textit{PySDD} and \textit{Cachet} using \texttt{ENC1} and \texttt{ENC2}}
-\label{tab:memory_pysdd_cachet}
+\caption{Computational requirements (memory and runtime) for \texttt{ENC1} and \texttt{ENC2}}
+\label{tab:memory_runtime}
 \end{table}
 
-\begin{table}[h]
-\centering
-\begin{tabular}{l | l l}
-					&	PySDD	&		Cachet	\\\hline
-	Full CPT ENC1	&	1.0		&		?		\\
-	Noisy OR ENC1	&	1.0		&		?		\\
-	Full CPT ENC2	&	1.0000000000000004 &	?	\\
-	Noisy OR ENC2	&	1.0		&		?		\\
-\end{tabular}
-\caption{Runtime for \textit{PySDD} and \textit{Cachet} using \texttt{ENC1} and \texttt{ENC2}}
-\label{tab:runtime_pysdd_cachet}
-\end{table}
+For this task, we executed the following command:
+\begin{itemize}
+	\item[] \texttt{\$ python3 compreq-cli.py}
+\end{itemize}
 
 \subsubsection{Probabilities}
 To compute the probability $P(S \mid I=\top, O = \top, R = \top)$, we add evidence to the theory $\Delta$. As mentioned by Chavria and Darwiche \cite{chavira}, there are two ways to incorporate this evidence:
