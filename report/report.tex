@@ -3,6 +3,8 @@
 \usepackage{listings}
 \usepackage{hyperref}
 \usepackage{titlesec}
+\usepackage{graphicx}
+\usepackage{subcaption}
 
 \title{Probabilistic Programming}
 \author{Gillis Hermans, Sven Thijssen}
@@ -111,36 +113,99 @@ For \textit{PySDD} and \textit{Cachet}, we executed the following commands respe
 \subsubsection{What is the smallest circuit for each model you found and using which hyperparameters?}
 ``An SDD normalized for a vtree $v$ is a Boolean circuit defined as follows. If $v$ is a leaf node labeled with variable $X$, then the SDD is either $X$, $\neg X$, $\bot$ or an or-gate with inputs $X$ and $\neg X$ [\dots]''\cite{shen}.\\
 From the output, we get the SDD size, which is the size of the smallest circuit since the model is already minimized.
-Without changing the default hyperparameters, we get the following smallest circuits:
-\begin{table}
-\centering
-\begin{tabular}{l | l}
-					&	\\\hline
-	Full CPT ENC1	&		\\
-	Noisy OR ENC1	&		\\
-	Full CPT ENC2	&		\\
-	Noisy OR ENC2	&		\\
-\end{tabular}
-\caption{Hyperparameter \texttt{-m}}
-\end{table}
+For the different encodings, we vary the initial vtree type (flag \texttt{-t}) and the clauses for vtree search (flag \texttt{-r}).
+
+
+\begin{figure}[h]
+  \centering
+  \begin{subfigure}[b]{0.4\linewidth}
+    \includegraphics[width=\linewidth]{images/enc1_full.png}
+    \caption{Circuit size for Bayesian net as full CPT with \texttt{ENC1} for varying vtree type and number of clauses for vtree search}
+  \end{subfigure}
+    \begin{subfigure}[b]{0.4\linewidth}
+    \includegraphics[width=\linewidth]{images/enc1_noisy.png}
+    \caption{Circuit size for Bayesian net as noisy-OR with \texttt{ENC1} for varying vtree type and number of clauses for vtree search}
+  \end{subfigure}
+  \begin{subfigure}[b]{0.4\linewidth}
+    \includegraphics[width=\linewidth]{images/enc2_full.png}
+    \caption{Circuit size for Bayesian net as full CPT with \texttt{ENC2} for varying vtree type and number of clauses for vtree search}
+  \end{subfigure}
+    \begin{subfigure}[b]{0.4\linewidth}
+    \includegraphics[width=\linewidth]{images/enc2_noisy.png}
+    \caption{Circuit size for Bayesian net as noisy-OR with \texttt{ENC2} for varying vtree type and number of clauses for vtree search}
+  \end{subfigure}
+  \label{fig:circuits}
+\end{figure}
+
+We observe that the circuit size is overall smaller for balanced vtrees and overall greater for random vtrees. Circuit sizes for left, right and vertical vtrees usually lie between these circuit values. 
 
 \subsubsection{Create an overview of the computational requirements of the compilation (e.g. runtime, memory)}
+To create an overview of the runtime and memory usage of the python process, we used \textit{Pympler}. 
+
+\begin{table}[h]
+\centering
+\begin{tabular}{l | l l}
+					&	PySDD	&		Cachet	\\\hline
+	Full CPT ENC1	&	1.0		&		?		\\
+	Noisy OR ENC1	&	1.0		&		?		\\
+	Full CPT ENC2	&	1.0000000000000004 &	?	\\
+	Noisy OR ENC2	&	1.0		&		?		\\
+\end{tabular}
+\caption{Memory usage for \textit{PySDD} and \textit{Cachet} using \texttt{ENC1} and \texttt{ENC2}}
+\label{tab:memory_pysdd_cachet}
+\end{table}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{l | l l}
+					&	PySDD	&		Cachet	\\\hline
+	Full CPT ENC1	&	1.0		&		?		\\
+	Noisy OR ENC1	&	1.0		&		?		\\
+	Full CPT ENC2	&	1.0000000000000004 &	?	\\
+	Noisy OR ENC2	&	1.0		&		?		\\
+\end{tabular}
+\caption{Runtime for \textit{PySDD} and \textit{Cachet} using \texttt{ENC1} and \texttt{ENC2}}
+\label{tab:runtime_pysdd_cachet}
+\end{table}
 
 \subsubsection{Use WMC to compute the probabilities }
+To compute the probability $P(S \mid I=\top, O = \top, R = \top)$, we add evidence to the theory $\Delta$. As mentioned by Chavria and Darwiche \cite{chavira}, there are two ways to incorporate this evidence:
+\begin{enumerate}
+	\item the weight associated with each indicator $\lambda_x$, whose subscript contradicts the evidence from 1 to 0.
+	\item the rows that contradicts the evidence are removed from the theory being counted.
+\end{enumerate}
+
+To obtain these results, we have chosen to use the first approach. We have adapted our script which generates the \textit{PySDD} CNF file such that the $\lambda_x$ indicator variables which contradict the evidence are set to 0. However, when using this technique, we obtained results which did not match our expectations. We would expect the probability to be $99.99\%$ (see Figure \ref{fig:task_1_3_4}) but obtained a WMC of 0, which would be incorrect. We then made a script to load the \textit{PySDD} CNF file and set the weights of the literals manually. When doing this, the probabilities of the literals are $nan$.
+
 \subsubsection{Explain briefly the main theoretical differences between the two weighted model counters.}
 
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\linewidth]{images/task_1_3_4.png}
+	\caption{Probability}
+	\label{fig:task_1_3_4}
+\end{figure}
 
 \section{Lifted Inference}
 \section{Parameter Learning}
 
 \newpage
 
+
+\section*{Repositories}
+\begin{itemize}
+	\item \href{https://github.com/sventhijssen/pgmtocnf}{https://github.com/sventhijssen/pgmtocnf}
+	\item \href{https://github.com/gillishermans/probabilisticprogramming_part1.2-3}{https://github.com/gillishermans/probabilisticprogramming\_part1.2-3}
+	\item \href{https://github.com/sventhijssen/pysdd}{https://github.com/sventhijssen/pysdd}
+\end{itemize}
+
 \bibliography{references}
 \bibliographystyle{ieeetr}
 
 \newpage
 
-\section{Appendix}
+\section*{Appendix}
 \label{appendix}
 \subsubsection*{Full CPTs with ENC1}
 \paragraph{Variables}\mbox{}\\

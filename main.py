@@ -15,7 +15,7 @@ def main(name, graph, evidence=None):
         print("===")
         for clause in encoding.get_cnf():
             print(clause)
-        path = "C:/Users/User/Documents/Informatica/2018-2019/capita-selecta/Probabilistic Programming/PySDD/"
+        path = "C:/Users/User/Documents/Informatica/2018-2019/capita-selecta/Probabilistic Programming/pysdd-fork/PySDD/cnf/"
         #path = "out/"
         file_name = path + name + "_" + enc_name + "_" + graph_type
         encoding.export_enc_to_latex(file_name)
